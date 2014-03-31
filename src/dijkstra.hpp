@@ -1,60 +1,73 @@
 /* 
- * File:   dijkstra.hpp
+ * File:   adjlist.hpp
  * Author: svyat
  *
- * Created on March 31, 2014, 5:05 PM
+ * Created on March 31, 2014, 2:02 AM
  */
 
-#ifndef DIJKSTRA_HPP
-#define	DIJKSTRA_HPP
+#ifndef ADJLIST_HPP
+#define	ADJLIST_HPP
 
-#include <set>
-#include <assert.h>
-#include "adjlist.hpp"
+#include <vector>
+#include "edgelist.hpp"
+#include "edge.hpp"
 
-bool nonnegativeEdges(AdjList &g)
+class AdjList
 {
-    int n = g.maxVertexNum;
-    for (unsigned i = 0; i <= n; ++i)
-        for (AdjList::iterator it = g.begin(i); it != g.end(i); ++it)
-            if (it->first < 0)
-                return false;
-    return true;
-}
-
-void Dijkstra(AdjList g, std::vector<int>& distance,
-        std::vector<int>& predecessor, unsigned start, int inf)
-{
-    assert(nonnegativeEdges(g));
-    distance.clear();
-    predecessor.clear();
-    distance.assign(g.maxVertexNum + 1, inf);
-    predecessor.assign(g.maxVertexNum + 1, -1);
-    distance[start] = 0;
-    std::set< std::pair<int, unsigned> > Q;
-    Q.insert(std::make_pair(distance[start], start));
-    std::pair<int, unsigned> extracted;
-    while (!Q.empty())
+    std::vector< std::vector< std::pair<int, unsigned> > > G;
+public:
+    typedef std::vector<std::pair<int, unsigned> >::iterator iterator;
+    int maxVertexNum;
+    AdjList() { maxVertexNum = -1; }
+    AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g);
+    //AdjList(EdgeList g);
+    ~AdjList()
     {
-        extracted = *Q.begin();
-        Q.erase(Q.begin());
-        unsigned u = extracted.second;
-        unsigned v;
-        int w;
-        for (AdjList::iterator it = g.begin(u); it != g.end(u); ++it)
-        {
-            v = it->second;
-            w = it->first;
-            if (distance[v] > distance[u] + w)
-            {
-                Q.erase(std::make_pair(distance[v], v));
-                distance[v] = distance[u] + w;
-                Q.insert(std::make_pair(distance[v], v));
-                predecessor[v] = u;
-            }
-        }
+        for (int i = 0; i < G.size(); ++i)
+            G[i].clear();
+        G.clear();
     }
+    void resize(unsigned size) { G.resize(size); }
+    void addEdge(Edge edge);
+    iterator begin(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].begin(); }
+    iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
+    friend std::istream& operator>> (std::istream& in, AdjList &list);
+};
+
+AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g)
+{
+    G = g;
+    maxVertexNum = -1;
+    for (unsigned i = 0; i < g.size(); ++i)
+        for (int j = 0; j < g[i].size(); ++j)
+            if (maxVertexNum < std::max(g[i][j].second, i))
+                maxVertexNum = std::max(g[i][j].second, i);               
 }
 
-#endif	/* DIJKSTRA_HPP */
+void AdjList::addEdge(Edge edge)
+{
+    G[edge.u].push_back(std::make_pair(edge.weight, edge.v));
+    if (maxVertexNum < (int)std::max(edge.u, edge.v))
+        maxVertexNum = std::max(edge.u, edge.v);    
+}
+
+std::istream& operator>> (std::istream& in, AdjList &list)
+{
+    int n, m;
+    in >> n >> m;
+    list.resize(n + 1);
+    Edge edge;
+    for (int i = 0; i < m; ++i)
+    {
+        in >> edge;
+        list.addEdge(edge);
+        /* in case of graph is undirected
+        std::swap(edge.u, edge.v);
+        list.addEdge(edge);
+         */
+    }
+    return in;
+}
+
+#endif	/* ADJLIST_HPP */
 
