@@ -61,9 +61,12 @@ std::istream& operator>> (std::istream& in, AdjList &list)
     {
         in >> edge;
         list.addEdge(edge);
+        /* in case of graph is undirected
+        std::swap(edge.u, edge.v);
+        list.addEdge(edge);
+         */
     }
     return in;
 }
 
 #endif	/* ADJLIST_HPP */
-
