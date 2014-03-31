@@ -11,7 +11,7 @@
 #include <set>
 #include <assert.h>
 #include "adjlist.hpp"
-using namespace std;
+
 bool nonnegativeEdges(AdjList &g)
 {
     int n = g.maxVertexNum;
@@ -31,7 +31,7 @@ void Dijkstra(AdjList g, std::vector<int>& distance,
     distance.assign(g.maxVertexNum + 1, inf);
     predecessor.assign(g.maxVertexNum + 1, -1);
     distance[start] = 0;
-    std::set<std::pair<int, unsigned> > Q;
+    std::set< std::pair<int, unsigned> > Q;
     Q.insert(std::make_pair(distance[start], start));
     std::pair<int, unsigned> extracted;
     while (!Q.empty())
