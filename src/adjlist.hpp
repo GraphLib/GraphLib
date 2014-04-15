@@ -1,6 +1,6 @@
 /* 
  * File:   adjlist.hpp
- * Author: svyat
+ * Author: svyat, alex
  *
  * Created on March 31, 2014, 2:02 AM
  */
@@ -29,6 +29,7 @@ public:
     }
     void resize(unsigned size) { G.resize(size); }
     void addEdge(Edge edge);
+    void toAdjMatrix(AdjMatrix& g);
     iterator begin(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].begin(); }
     iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
     friend std::istream& operator>> (std::istream& in, AdjList &list);
@@ -49,6 +50,32 @@ void AdjList::addEdge(Edge edge)
     G[edge.u].push_back(std::make_pair(edge.weight, edge.v));
     if (maxVertexNum < (int)std::max(edge.u, edge.v))
         maxVertexNum = std::max(edge.u, edge.v);    
+}
+
+void AdjList::toAdjMatrix(AdjMatrix& g)
+{
+    g.resize(maxVertexNum + 1);
+    g.maxVertexNum = maxVertexNum;
+    for (int i = 1; i <= maxVertexNum; i++)
+    {
+        for (int j = 1; j <= maxVertexNum; j++)
+            if (i == j)
+            {
+                Edge newEdge(i, j, 0);
+                g.addEdge(newEdge);
+            }
+            else
+            {
+                Edge newEdge(i, j, infinity);
+                g.addEdge(newEdge);
+            }
+    }
+    for (unsigned i = 0; i < G.size(); ++i)
+        for (int j = 0; j < G[i].size(); ++j)
+        {
+            Edge newEdge(i, G[i][j].second, G[i][j].first); 
+            g.addEdge(newEdge);
+        }
 }
 
 std::istream& operator>> (std::istream& in, AdjList &list)
