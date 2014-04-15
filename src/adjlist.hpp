@@ -18,7 +18,7 @@ class AdjList
 public:
     typedef std::vector<std::pair<int, unsigned> >::iterator iterator;
     int maxVertexNum;
-    AdjList() { maxVertexNum = -1; }
+    AdjList() { maxVertexNum = -1; infinity = -1;}
     AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g);
     //AdjList(EdgeList g);
     ~AdjList()
@@ -29,10 +29,12 @@ public:
     }
     void resize(unsigned size) { G.resize(size); }
     void addEdge(Edge edge);
+    int addVertex(unsigned VertexNum);
     void toAdjMatrix(AdjMatrix& g);
     iterator begin(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].begin(); }
     iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
     friend std::istream& operator>> (std::istream& in, AdjList &list);
+    friend std::ostream& operator<< (std::ostream& out, AdjList &list);
 };
 
 AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g)
@@ -43,6 +45,21 @@ AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g)
         for (int j = 0; j < g[i].size(); ++j)
             if (maxVertexNum < std::max(g[i][j].second, i))
                 maxVertexNum = std::max(g[i][j].second, i);               
+}
+
+int AdjList::addVertex(unsigned VertexNum)
+{
+    for (unsigned i = 0; i < G.size(); ++i)
+        if (VertexNum == i)
+        {
+            throw "Vertex with this number exists";
+            return 1;
+        }
+    std::vector<std::pair<int, unsigned> > forNew;
+    forNew.clear();
+    G.push_back(forNew);
+    if (VertexNum > maxVertexNum)
+        maxVertexNum = VertexNum; 
 }
 
 void AdjList::addEdge(Edge edge)
@@ -94,6 +111,18 @@ std::istream& operator>> (std::istream& in, AdjList &list)
          */
     }
     return in;
+}
+
+std::ostream& operator<< (std::ostream& out, AdjList &list)
+{
+    for (unsigned i = 0; i < list.maxVertexNum; ++i)
+    {
+        for (AdjList::iterator it = list.begin(i); it != list.end(i); ++it)
+        {
+            out << i << ' ' << it->second << ' ' << it->first << '\n'; 
+        }
+    }
+    return out;
 }
 
 #endif	/* ADJLIST_HPP */
