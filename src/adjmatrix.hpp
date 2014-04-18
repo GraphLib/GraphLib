@@ -47,6 +47,7 @@ public:
     }
     void addEdge(Edge edge);
     void addVertex();
+    void deleteEdge(unsigned FirstVertexNum, unsigned SecondVertexNum);
     iterator begin(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].begin(); }
     iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
     friend std::istream& operator>> (std::istream& in, AdjMatrix& matr);
@@ -87,6 +88,14 @@ void AdjMatrix::addVertex()
         forNew[j] = infinity;
     forNew[maxVertexNum] = 0;
     G.push_back(forNew);
+}
+
+void AdjMatrix::deleteEdge(unsigned FirstVertexNum, unsigned SecondVertexNum)
+{
+    if (FirstVertexNum > maxVertexNum || SecondVertexNum > maxVertexNum || FirstVertexNum == SecondVertexNum)
+        throw "This edge not exists!";
+    else
+        G[FirstVertexNum][SecondVertexNum] = infinity;
 }
 
 std::istream& operator>> (std::istream& in, AdjMatrix& matr)
