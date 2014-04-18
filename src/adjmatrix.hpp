@@ -31,8 +31,6 @@ public:
     AdjMatrix(int inf) { maxVertexNum = -1; infinity = inf; }
     AdjMatrix(std::vector< std::vector< int > > g, int inf);
     AdjMatrix(unsigned size, int inf);
-    //AdjMatrix(AdjList g);
-    //AdjMatrix(EdgeList g);
     ~AdjMatrix()
     {
         for (int i = 0; i < G.size(); ++i)
@@ -48,6 +46,7 @@ public:
         // ? maxVertexNum = size; 
     }
     void addEdge(Edge edge);
+    void addVertex();
     iterator begin(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].begin(); }
     iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
     friend std::istream& operator>> (std::istream& in, AdjMatrix& matr);
@@ -75,32 +74,19 @@ AdjMatrix::AdjMatrix(unsigned size, int inf)
             else G[i][j] = inf;
 }
 
-/*AdjMatrix::AdjMatrix(AdjList g)
-{
-    this->resize(g.maxVertexNum);
-    maxVertexNum = g.maxVertexNum;
-    for (int i = 0; i < maxVertexNum; i++)
-        for (int j = 0; j < maxVertexNum; j++)
-            if (i == j) G[i][j] = 0;
-            else G[i][j] = g.infinity;
-    for (int i = 0; i < maxVertexNum; i++)
-        for (AdjList::iterator it = g.begin(u); it != g.end(u); ++it)
-        {
-            Edge newEdge(it->first, it->second, it->weight); 
-            this->addEdge(newEdge);
-            //G[it->first][it->second]
-        }
-    for (int i = 0; i < maxVertexNum; i++)
-    {
-        for (int j = 0; j < maxVertexNum; j++)
-            std::cout << G[i][j] << " ";
-        std::cout << "\n";
-    }
-}*/
-
 void AdjMatrix::addEdge(Edge edge)
 {
     G[edge.u][edge.v] = edge.weight;   
+}
+
+void AdjMatrix::addVertex()
+{
+    std::vector<int> forNew;
+    forNew.resize(maxVertexNum + 1);
+    for (int j = 0; j < maxVertexNum; ++j)
+        forNew[j] = infinity;
+    forNew[maxVertexNum] = 0;
+    G.push_back(forNew);
 }
 
 std::istream& operator>> (std::istream& in, AdjMatrix& matr)
