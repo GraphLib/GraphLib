@@ -29,8 +29,8 @@ public:
     }
     void resize(unsigned size) { G.resize(size); }
     void addEdge(Edge edge);
-    int addVertex(unsigned VertexNum);
-    void toAdjMatrix(AdjMatrix& g);
+    void addVertex();
+    AdjMatrix toAdjMatrix();
     iterator begin(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].begin(); }
     iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
     friend std::istream& operator>> (std::istream& in, AdjList &list);
@@ -47,19 +47,12 @@ AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g)
                 maxVertexNum = std::max(g[i][j].second, i);               
 }
 
-int AdjList::addVertex(unsigned VertexNum)
+void AdjList::addVertex()
 {
-    for (unsigned i = 0; i < G.size(); ++i)
-        if (VertexNum == i)
-        {
-            throw "Vertex with this number exists";
-            return 1;
-        }
+    maxVertexNum++;
     std::vector<std::pair<int, unsigned> > forNew;
     forNew.clear();
     G.push_back(forNew);
-    if (VertexNum > maxVertexNum)
-        maxVertexNum = VertexNum; 
 }
 
 void AdjList::addEdge(Edge edge)
@@ -69,30 +62,40 @@ void AdjList::addEdge(Edge edge)
         maxVertexNum = std::max(edge.u, edge.v);    
 }
 
-void AdjList::toAdjMatrix(AdjMatrix& g)
+AdjMatrix AdjList::toAdjMatrix()
 {
+    AdjMatrix g;
     g.resize(maxVertexNum + 1);
     g.maxVertexNum = maxVertexNum;
+    g.infinity = infinity;
+    Edge newEdge;
     for (int i = 1; i <= maxVertexNum; i++)
     {
         for (int j = 1; j <= maxVertexNum; j++)
             if (i == j)
             {
-                Edge newEdge(i, j, 0);
+                newEdge.u = i;
+                newEdge.v = j; 
+                newEdge.weight = 0;
                 g.addEdge(newEdge);
             }
             else
             {
-                Edge newEdge(i, j, infinity);
+                newEdge.u = i;
+                newEdge.v = j; 
+                newEdge.weight = infinity;
                 g.addEdge(newEdge);
             }
     }
     for (unsigned i = 0; i < G.size(); ++i)
         for (int j = 0; j < G[i].size(); ++j)
         {
-            Edge newEdge(i, G[i][j].second, G[i][j].first); 
+            newEdge.u = i; 
+            newEdge.v = G[i][j].second; 
+            newEdge.weight = G[i][j].first; 
             g.addEdge(newEdge);
         }
+    return g;
 }
 
 std::istream& operator>> (std::istream& in, AdjList &list)
