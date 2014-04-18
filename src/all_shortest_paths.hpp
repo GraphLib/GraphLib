@@ -31,13 +31,14 @@ void AdjMatrix::ParallelFloyd(std::vector< std::vector< int > >& PathMatrix)
     for (int k = 0; k < PathMatrix.size(); ++k)
   //#pragma omp parallel for private (t1, t2)
       for (int i = 0; i < PathMatrix.size(); ++i)
-        for (int j = 0; j < PathMatrix.size(); ++j)
-          if ((PathMatrix[i][k] != infinity) && (PathMatrix[k][j] != infinity)) 
-          {
-              t1 = PathMatrix[i][j];
-              t2 = PathMatrix[i][k] + PathMatrix[k][j];
-              PathMatrix[i][j] = Min(t1, t2, infinity);
-          }
+        if (PathMatrix[i][k] != infinity)
+          for (int j = 0; j < PathMatrix.size(); ++j)
+            if (PathMatrix[k][j] != infinity) 
+            {
+                t1 = PathMatrix[i][j];
+                t2 = PathMatrix[i][k] + PathMatrix[k][j];
+                PathMatrix[i][j] = Min(t1, t2, infinity);
+            }
 }
 
 #endif	/* ALL_SHORTEST_PATHS_HPP */
