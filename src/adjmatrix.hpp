@@ -100,11 +100,11 @@ void AdjMatrix::deleteEdge(unsigned FirstVertexNum, unsigned SecondVertexNum)
 
 std::istream& operator>> (std::istream& in, AdjMatrix& matr)
 {
-    int n, m;
+    int n, m, i;
     in >> n >> m;
-    matr.resize(n + 1);
-    for (int i = 0; i < n + 1; ++i)
-        for (int j = 0; j < n + 1; ++j)
+    matr.resize(n);
+    for (i = 0; i <= n; ++i)
+        for (int j = 0; j <= n; ++j)
         {
             int weight;
             i == j ? weight = 0 : weight = matr.infinity;
@@ -112,7 +112,7 @@ std::istream& operator>> (std::istream& in, AdjMatrix& matr)
             matr.addEdge(e);
         }
     Edge edge;
-    for (int i = 0; i < m; ++i)
+    for (i = 0; i < m; ++i)
     {
         in >> edge;
         matr.addEdge(edge);
@@ -120,15 +120,24 @@ std::istream& operator>> (std::istream& in, AdjMatrix& matr)
         
          */
     }
+    if (i != m)
+        throw "Reading error!";
     return in;
 }
 
 std::ostream& operator<< (std::ostream& out, AdjMatrix& matr)
 {
-    for (int i = 0; i < matr.G.size(); ++i)
-        for (int j = 0; j < matr.G[i].size(); ++j)
+    int i, j;
+    for (i = 0; i < matr.G.size(); ++i)
+    {
+        for (j = 0; j < matr.G[i].size(); ++j)
             if (matr.infinity != matr.G[i][j] && 0 != matr.G[i][j])
                 out << i << ' ' << j << ' ' << matr.G[i][j] << '\n';
+        if (j != matr.G.size())
+            throw "Writing error!";        
+    }
+    if (i != matr.G.size())
+        throw "Writing error!";
     return out;
 }
 
