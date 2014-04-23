@@ -30,6 +30,7 @@ public:
     void resize(unsigned size) { G.resize(size); }
     void addEdge(Edge edge);
     void addVertex();
+    void deleteEdge(unsigned FirstVertexNum, unsigned SecondVertexNum);
     AdjMatrix toAdjMatrix();
     iterator begin(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].begin(); }
     iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
@@ -60,6 +61,23 @@ void AdjList::addEdge(Edge edge)
     G[edge.u].push_back(std::make_pair(edge.weight, edge.v));
     if (maxVertexNum < (int)std::max(edge.u, edge.v))
         maxVertexNum = std::max(edge.u, edge.v);    
+}
+
+void AdjList::deleteEdge(unsigned FirstVertexNum, unsigned SecondVertexNum)
+{
+    int j, k;
+    if (FirstVertexNum > maxVertexNum || SecondVertexNum > maxVertexNum || FirstVertexNum == SecondVertexNum)
+        throw "This edge not exists!";
+    for (j = 0; j < G[FirstVertexNum].size(); ++j)
+        if (G[FirstVertexNum][j].second == SecondVertexNum)
+        {
+            for (k = j; k < G[FirstVertexNum].size(); ++k)
+                G[FirstVertexNum][k] = G[FirstVertexNum][k + 1];
+            break;
+        }
+    if (j == G[FirstVertexNum].size())
+        throw "This edge not exists!";
+    G[FirstVertexNum].pop_back();
 }
 
 AdjMatrix AdjList::toAdjMatrix()
@@ -120,9 +138,9 @@ std::ostream& operator<< (std::ostream& out, AdjList &list)
 {
     for (unsigned i = 0; i < list.maxVertexNum; ++i)
     {
-        for (AdjList::iterator it = list.begin(i); it != list.end(i); ++it)
+        for (int j = 0; j < list.G[i].size(); ++j)
         {
-            out << i << ' ' << it->second << ' ' << it->first << '\n'; 
+            out << i << ' ' << list.G[i][j].second << ' ' << list.G[i][j].first << '\n'; 
         }
     }
     return out;
