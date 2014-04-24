@@ -93,13 +93,13 @@ void AdjList::deleteEdge(unsigned FirstVertexNum, unsigned SecondVertexNum)
 AdjMatrix AdjList::toAdjMatrix()
 {
     AdjMatrix g;
-    g.resize(maxVertexNum + 1);
+    g.resize(maxVertexNum);
     g.maxVertexNum = maxVertexNum;
     g.infinity = infinity;
     Edge newEdge;
-    for (int i = 1; i <= maxVertexNum; i++)
+    for (int i = 0; i < maxVertexNum; i++)
     {
-        for (int j = 1; j <= maxVertexNum; j++)
+        for (int j = 0; j < maxVertexNum; j++)
             if (i == j)
             {
                 newEdge.u = i;
