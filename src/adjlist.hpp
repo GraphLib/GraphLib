@@ -11,6 +11,8 @@
 #include <vector>
 #include "edgelist.hpp"
 #include "edge.hpp"
+#include "adjmatrix.hpp"
+#include <limits.h>
 
 class AdjList
 {
@@ -36,6 +38,14 @@ public:
     iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
     friend std::istream& operator>> (std::istream& in, AdjList &list);
     friend std::ostream& operator<< (std::ostream& out, AdjList &list);
+    
+    // for Dijkstra()
+    bool nonnegativeEdges();
+    // Dijkstra Algorithm
+    void Dijkstra(unsigned start, std::vector<int>& distance, std::vector<int>& predecessor);
+    
+    // Parallel Johnson Algorithm
+    void ParallelJohnson(std::vector< std::vector< int > >& PathMatrix);
 };
 
 AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g)
