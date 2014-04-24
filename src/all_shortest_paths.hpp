@@ -41,4 +41,41 @@ void AdjMatrix::ParallelFloyd(std::vector< std::vector< int > >& PathMatrix)
             }
 }
 
+void AdjList::ParallelJohnson(std::vector< std::vector< int > >& PathMatrix)
+{
+    PathMatrix.resize(G.size());
+    // Delete this?
+    /*for (int i = 0; i < PathMatrix.size(); ++i)
+        PathMatrix[i].resize(G.size());
+    for (int i = 0; i < PathMatrix.size(); ++i)
+        for (int j = 0; j < PathMatrix[i].size(); ++j)
+            i == j ? PathMatrix[i][j] = infinity : PathMatrix[i][j] = 0;*/
+    this->addVertex();
+    Edge e;
+    for (int i = 0; i < G.size() - 1; ++i)
+    {
+        e.u = maxVertexNum;
+        e.v = i;
+        e.weight = 0;
+        this->addEdgeForJohnson(e);
+    }
+    std::vector<int> h;
+    std::vector<int> paths;
+    //this->BellmanFord(maxVertexNum, h, paths)
+    /*for (int i = 0; i < G.size() - 1; ++i)
+        for (int j = 0; j < G[i].size(); ++j)
+            G[i][j].first = G[i][j].first + h[i] - h[j];*/
+    //omp_set_num_threads(omp_get_num_threads())
+  //#pragma omp parallel for
+    for (int i = 0; i < G.size() - 1; ++i)
+        this->Dijkstra(i, PathMatrix[i], paths);
+    /*for (int i = 0; i < G.size() - 1; ++i)
+        for (int j = 0; j < G[i].size(); ++j)
+        {
+            G[i][j].first = G[i][j].first - h[i] + h[j];
+            PathMatrix[i][j] = PathMatrix[i][j] - h[i] + h[j];
+        }*/
+    G.pop_back();
+}
+
 #endif	/* ALL_SHORTEST_PATHS_HPP */
