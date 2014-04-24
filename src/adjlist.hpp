@@ -17,6 +17,7 @@
 class AdjList
 {
     std::vector< std::vector< std::pair<int, unsigned> > > G;
+    void addEdgeForJohnson(Edge edge);
 public:
     typedef std::vector<std::pair<int, unsigned> >::iterator iterator;
     int maxVertexNum;
@@ -67,6 +68,21 @@ void AdjList::addVertex()
 }
 
 void AdjList::addEdge(Edge edge)
+{
+    int flag = 0;
+    for (unsigned i = 0; i < G.size(); ++i)
+        if (edge.u == i || edge.v == i)
+          flag++;
+    if (2 != flag)
+    {
+        throw "No start or finish vertex";
+    }
+    G[edge.u].push_back(std::make_pair(edge.weight, edge.v));
+    if (maxVertexNum < (int)std::max(edge.u, edge.v))
+        maxVertexNum = std::max(edge.u, edge.v);    
+}
+
+void AdjList::addEdgeForJohnson(Edge edge)
 {
     G[edge.u].push_back(std::make_pair(edge.weight, edge.v));
     if (maxVertexNum < (int)std::max(edge.u, edge.v))
