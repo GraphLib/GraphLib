@@ -57,7 +57,7 @@ public:
 void EdgeList::addEdge(Edge edge)
 {
     edgeList.push_back(edge);
-    if (std::max(edge.u, edge.v) > maxVertexNum)
+    if ((int)std::max(edge.u, edge.v) > maxVertexNum)
         maxVertexNum = std::max(edge.u, edge.v);
 }
 
