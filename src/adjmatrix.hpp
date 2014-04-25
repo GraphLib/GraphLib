@@ -127,22 +127,18 @@ std::istream& operator>> (std::istream& in, AdjMatrix& matr)
     int n, m, i;
     in >> n >> m;
     matr.resize(n);
-    for (i = 0; i <= n; ++i)
-        for (int j = 0; j <= n; ++j)
+    int weight;
+    for (i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
         {
-            int weight;
             i == j ? weight = 0 : weight = matr.infinity;
-            Edge e(i, j, weight);  
-            matr.addEdge(e);
+            matr.G[i][j] = weight;
         }
-    Edge edge;
+    unsigned u, v;
     for (i = 0; i < m; ++i)
     {
-        in >> edge;
-        matr.addEdge(edge);
-        /* in case of graph is undirected
-        
-         */
+        in >> u >> v >> weight;
+        matr.G[u][v] = weight;
     }
     if (i != m)
         throw "Reading error!";
