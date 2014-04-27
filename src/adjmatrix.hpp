@@ -14,7 +14,6 @@
 #include "adjlist.hpp"
 #include "edgelist.hpp"
 #include "edge.hpp"
-#include "dijkstra.hpp"
 
 class AdjMatrix
 {
