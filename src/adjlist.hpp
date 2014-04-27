@@ -21,7 +21,8 @@ class AdjList
 public:
     typedef std::vector<std::pair<int, unsigned> >::iterator iterator;
     int maxVertexNum;
-    AdjList() { maxVertexNum = -1; infinity = -1;}
+    int infinity;
+    AdjList() { maxVertexNum = -1; infinity = INT_MAX - 1;}
     AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g);
     //AdjList(EdgeList g);
     ~AdjList()
