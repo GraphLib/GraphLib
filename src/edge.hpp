@@ -20,13 +20,20 @@ public:
     {
         return weight < other.weight;
     }
-    friend std::istream& operator>> (std::istream& in, Edge &edge);
+    friend std::istream& operator>> (std::istream&, Edge &);
+    friend std::ostream& operator<< (std::ostream&, Edge &);
 };
 
 std::istream& operator>> (std::istream& in, Edge &edge)
 {
     in >> edge.u >> edge.v >> edge.weight;
     return in;
+}
+
+std::ostream& operator<< (std::ostream& out, Edge &edge)
+{
+    out << edge.u << " " << edge.v << " " << edge.weight;
+    return out;
 }
 
 #endif	/* EDGE_HPP */
