@@ -1,6 +1,6 @@
 /* 
  * File:   all_shortest_paths.hpp
- * Author: alex
+ * Author: alex, svyat
  *
  * Created on April 5, 2014, 12:20 PM
  */
@@ -9,73 +9,53 @@
 #define	ALL_SHORTEST_PATHS_HPP
 
 #include <assert.h>
-#include "adjmatrix.hpp"
+#include "graph.hpp"
+#include "shortest_paths.hpp"
 
-int Min(int A, int B, int inf)
+void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& d)
 {
-  int Result = (A < B) ? A : B;
-
-  if((A == inf) && (B != inf)) Result = B;
-  if((B == inf) && (A != inf)) Result = A;
-  if((A == inf) && (B == inf)) Result = inf;
-
-  return Result;
-}
-
-void AdjMatrix::ParallelFloyd(std::vector< std::vector< int > >& PathMatrix)
-{
-    PathMatrix.assign(G.begin(), G.end());
-    int t1, t2;
+    g.toAdjMatrix();
+    d.resize(g.verticesCount());
+    for (int i = 0, n = g.verticesCount(); i < n; ++i)
+        d[i].assign(g.adjMatrix[i].begin(), g.adjMatrix[i].end());
     //omp_set_num_threads(omp_get_num_threads())
     //omp_set_num_threads(8);
-    for (int k = 0; k < PathMatrix.size(); ++k)
-  //#pragma omp parallel for private (t1, t2)
-      for (int i = 0; i < PathMatrix.size(); ++i)
-        if (PathMatrix[i][k] != infinity)
-          for (int j = 0; j < PathMatrix.size(); ++j)
-            if (PathMatrix[k][j] != infinity) 
-            {
-                t1 = PathMatrix[i][j];
-                t2 = PathMatrix[i][k] + PathMatrix[k][j];
-                PathMatrix[i][j] = Min(t1, t2, infinity);
-            }
+    for (int k = 0; k < d.size(); ++k)
+    //#pragma omp parallel for private (t1, t2)
+      for (int i = 0; i < d.size(); ++i)
+        if (d[i][k] != g.infinity)
+          for (int j = 0; j < d.size(); ++j)
+            if (d[k][j] != g.infinity)
+                d[i][j] = std::min(d[i][j], d[i][k] + d[k][j]);
 }
 
-void AdjList::ParallelJohnson(std::vector< std::vector< int > >& PathMatrix)
+bool ParallelJohnson(Graph &g, std::vector< std::vector< int > >& distance,
+        std::vector< std::vector<int> >& predecessor)
 {
-    PathMatrix.resize(G.size());
-    // Delete this?
-    /*for (int i = 0; i < PathMatrix.size(); ++i)
-        PathMatrix[i].resize(G.size());
-    for (int i = 0; i < PathMatrix.size(); ++i)
-        for (int j = 0; j < PathMatrix[i].size(); ++j)
-            i == j ? PathMatrix[i][j] = infinity : PathMatrix[i][j] = 0;*/
-    this->addVertex();
-    Edge e;
-    for (int i = 0; i < G.size() - 1; ++i)
-    {
-        e.u = maxVertexNum;
-        e.v = i;
-        e.weight = 0;
-        this->addEdgeForJohnson(e);
-    }
+    g.resize(g.verticesCount() + 1);
+    for (unsigned i = 0, n = (unsigned)g.verticesCount() - 1; i < n; ++i)
+        g.addEdge(Edge(i, n, 0));
     std::vector<int> h;
-    std::vector<int> paths;
-    //this->BellmanFord(maxVertexNum, h, paths)
-    /*for (int i = 0; i < G.size() - 1; ++i)
-        for (int j = 0; j < G[i].size(); ++j)
-            G[i][j].first = G[i][j].first + h[i] - h[j];*/
+    if (BellmanFord(g, h, g.verticesCount() - 1))
+        return false;
+    for (int i = 0; i < g.edgeList.size(); ++i)
+        g.edgeList[i].weight += h[g.edgeList[i].u] - h[g.edgeList[i].v];
     //omp_set_num_threads(omp_get_num_threads())
-  //#pragma omp parallel for
-    for (int i = 0; i < G.size() - 1; ++i)
-        this->Dijkstra(i, PathMatrix[i], paths);
-    /*for (int i = 0; i < G.size() - 1; ++i)
-        for (int j = 0; j < G[i].size(); ++j)
-        {
-            G[i][j].first = G[i][j].first - h[i] + h[j];
-            PathMatrix[i][j] = PathMatrix[i][j] - h[i] + h[j];
-        }*/
-    G.pop_back();
+    //#pragma omp parallel for
+    distance.resize(g.verticesCount() - 1);
+    predecessor.resize(g.verticesCount() - 1);
+    g.toAdjList();
+    for (unsigned i = 0, n = (unsigned)g.verticesCount() - 1; i < n; ++i)
+        g.deleteEdge(i, n);
+    g.resize(g.verticesCount() - 1);
+    for (unsigned i = 0, n = (unsigned)g.verticesCount(); i < n; ++i)
+        Dijkstra(g, distance[i], predecessor[i], i);
+    for (unsigned i = 0, n = (unsigned)g.verticesCount(); i < n; ++i)
+        for (int j = 0; j < g.adjList[i].size(); ++j)
+            g.adjList[i][j].first += h[i] - h[g.adjList[i][j].second];
+    for (int i = 0; i < g.edgeList.size(); ++i)
+        g.edgeList[i].weight += h[g.edgeList[i].v] - h[g.edgeList[i].u];
+    return true;
 }
 
 #endif	/* ALL_SHORTEST_PATHS_HPP */
