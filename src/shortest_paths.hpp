@@ -8,32 +8,61 @@
 #ifndef SHORTEST_PATHS_HPP
 #define	SHORTEST_PATHS_HPP
 
-#include <vector>
-#include <assert.h>
-#include "adjlist.hpp"
-#include "adjmatrix.hpp"
-#include "edgelist.hpp"
-#include "edge.hpp"
 #include <set>
+#include <assert.h>
+#include "graph.hpp"
 
-bool AdjList::nonnegativeEdges()
+bool nonnegativeEdges(Graph &g)
 {
-    for (unsigned i = 0; i < G.size(); ++i)
-        for (unsigned j = 0; j < G[i].size(); ++j)
-            if (G[i][j].first < 0)
+    int n = g.verticesCount();
+    for (unsigned i = 0; i < n; ++i)
+        for (int j = 0; j < g.adjList[i].size(); ++j)
+            if (g.adjList[i][j].first < 0)
                 return false;
     return true;
 }
 
-void AdjList::Dijkstra(unsigned start, std::vector<int>& distance, std::vector<int>& predecessor)
+bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
 {
-    assert(nonnegativeEdges());
+    distance.clear();
+    distance.assign(g.verticesCount(), g.infinity);
+    std::vector<int> D(g.verticesCount());
+    distance[start] = 0;
+    g.toEdgeList();
+    for (int i = 0, n = g.verticesCount(); i < n; ++i)
+    {
+        for (int j = 0; j < g.edgeList.size(); ++j)
+        {
+            if (D[g.edgeList[j].v] > D[g.edgeList[j].u] + g.edgeList[j].weight)
+            {
+                D[g.edgeList[j].v] = D[g.edgeList[j].u] + g.edgeList[j].weight;
+                if (i == n - 1)
+                    return true;
+            }
+            if (distance[g.edgeList[j].u] != g.infinity &&
+                    distance[g.edgeList[j].v] > distance[g.edgeList[j].u] +
+                    g.edgeList[j].weight)
+                distance[g.edgeList[j].v] = distance[g.edgeList[j].u] +
+                        g.edgeList[j].weight;
+        }
+    }
+    return false;
+}
+
+int Dijkstra(Graph &g, std::vector<int>& distance,
+        std::vector<int>& predecessor, unsigned start)
+{
+    g.toAdjList();
+    if ((int)start >= g.verticesCount())
+        return 1;
+    if (!nonnegativeEdges(g))
+        return 2;
     distance.clear();
     predecessor.clear();
-    distance.assign(maxVertexNum, infinity);
-    predecessor.assign(maxVertexNum, -1);
+    distance.assign(g.verticesCount(), g.infinity);
+    predecessor.assign(g.verticesCount(), -1);
     distance[start] = 0;
-    std::set< std::pair<int, unsigned> > Q;
+    std::set<std::pair<int, unsigned> > Q;
     Q.insert(std::make_pair(distance[start], start));
     std::pair<int, unsigned> extracted;
     while (!Q.empty())
@@ -43,10 +72,10 @@ void AdjList::Dijkstra(unsigned start, std::vector<int>& distance, std::vector<i
         unsigned u = extracted.second;
         unsigned v;
         int w;
-        for (int i = 0; i < G[u].size(); ++i)
+        for (int i = 0; i < g.adjList[u].size(); ++i)
         {
-            v = G[u][i].second;
-            w = G[u][i].first;
+            v = g.adjList[u][i].second;
+            w = g.adjList[u][i].first;
             if (distance[v] > distance[u] + w)
             {
                 Q.erase(std::make_pair(distance[v], v));
@@ -56,6 +85,7 @@ void AdjList::Dijkstra(unsigned start, std::vector<int>& distance, std::vector<i
             }
         }
     }
+    return 0;
 }
 
-#endif
+#endif /* SHORTEST_PATHS_HPP */
