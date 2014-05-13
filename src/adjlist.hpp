@@ -9,46 +9,22 @@
 #define	ADJLIST_HPP
 
 #include <vector>
-#include "edgelist.hpp"
-#include "edge.hpp"
-#include "adjmatrix.hpp"
 #include <limits.h>
+#include "edge.hpp"
+#include "data_structures.hpp"
 
-class AdjList
+AdjList::AdjList()
 {
-    std::vector< std::vector< std::pair<int, unsigned> > > G;
-    void addEdgeForJohnson(Edge edge);
-public:
-    typedef std::vector<std::pair<int, unsigned> >::iterator iterator;
-    int maxVertexNum;
-    int infinity;
-    AdjList() { maxVertexNum = -1; infinity = INT_MAX - 1;}
-    AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g);
-    //AdjList(EdgeList g);
-    ~AdjList()
-    {
-        for (int i = 0; i < G.size(); ++i)
-            G[i].clear();
-        G.clear();
-    }
-    void resize(unsigned size) { G.resize(size); }
-    void addEdge(Edge edge);
-    void addVertex();
-    void deleteEdge(unsigned FirstVertexNum, unsigned SecondVertexNum);
-    AdjMatrix toAdjMatrix();
-    iterator begin(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].begin(); }
-    iterator end(unsigned u) { return (u >= G.size()) ? G[0].begin() : G[u].end(); }
-    friend std::istream& operator>> (std::istream& in, AdjList &list);
-    friend std::ostream& operator<< (std::ostream& out, AdjList &list);
-    
-    // for Dijkstra()
-    bool nonnegativeEdges();
-    // Dijkstra Algorithm
-    void Dijkstra(unsigned start, std::vector<int>& distance, std::vector<int>& predecessor);
-    
-    // Parallel Johnson Algorithm
-    void ParallelJohnson(std::vector< std::vector< int > >& PathMatrix);
-};
+    maxVertexNum = -1;
+    infinity = INT_MAX;
+}
+
+AdjList::AdjList(unsigned size, int infinity)
+{
+    this->maxVertexNum = (int)size - 1;
+    G.resize(size);
+    this->infinity = infinity;
+}
 
 AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g)
 {
@@ -60,87 +36,105 @@ AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g)
                 maxVertexNum = std::max(g[i][j].second, i);               
 }
 
-void AdjList::addVertex()
+AdjList::~AdjList()
 {
-    maxVertexNum++;
-    std::vector<std::pair<int, unsigned> > forNew;
-    forNew.clear();
-    G.push_back(forNew);
+    clear();
 }
 
-void AdjList::addEdge(Edge edge)
+void AdjList::resize(unsigned size)
 {
-    int flag = 0;
-    for (unsigned i = 0; i < G.size(); ++i)
-        if (edge.u == i || edge.v == i)
-          flag++;
-    if (2 != flag)
+    G.resize(size);
+    maxVertexNum = size - 1;
+}
+
+int AdjList::addEdge(Edge edge, bool checkExistence)
+{
+    if (checkExistence)
     {
-        throw "No start or finish vertex";
+        if ((int)std::max(edge.u, edge.v) <= maxVertexNum)
+        {
+            for (int i = 0; i < G[edge.u].size(); ++i)
+                if (G[edge.u][i].second == edge.v)
+                    return 1;
+        }
+    }
+    if ((int)std::max(edge.u, edge.v) > maxVertexNum)
+    {
+        maxVertexNum = (int)std::max(edge.u, edge.v);
+        resize(maxVertexNum + 1);
     }
     G[edge.u].push_back(std::make_pair(edge.weight, edge.v));
-    if (maxVertexNum < (int)std::max(edge.u, edge.v))
-        maxVertexNum = std::max(edge.u, edge.v);    
+    G[edge.v].push_back(std::make_pair(edge.weight, edge.u));
+    return 0;
 }
 
-void AdjList::addEdgeForJohnson(Edge edge)
+int AdjList::deleteEdge(unsigned u, unsigned v)
 {
-    G[edge.u].push_back(std::make_pair(edge.weight, edge.v));
-    if (maxVertexNum < (int)std::max(edge.u, edge.v))
-        maxVertexNum = std::max(edge.u, edge.v);    
-}
-
-void AdjList::deleteEdge(unsigned FirstVertexNum, unsigned SecondVertexNum)
-{
-    int j, k;
-    if (FirstVertexNum > maxVertexNum || SecondVertexNum > maxVertexNum || FirstVertexNum == SecondVertexNum)
-        throw "This edge not exists!";
-    for (j = 0; j < G[FirstVertexNum].size(); ++j)
-        if (G[FirstVertexNum][j].second == SecondVertexNum)
+    // Need to recalc maxvertexnum!!!
+    if (u > maxVertexNum || v > maxVertexNum || u == v)
+        return 1;
+    for (int j = 0; j < G[u].size(); ++j)
+    {
+        if (G[u][j].second == v)
         {
-            for (k = j; k < G[FirstVertexNum].size(); ++k)
-                G[FirstVertexNum][k] = G[FirstVertexNum][k + 1];
-            break;
+            for (int k = j; k + 1 < G[u].size(); ++k)
+                G[u][k] = G[u][k + 1];
+            G[u].pop_back();
+            for (int k = 0; k < G[v].size(); ++k)
+            {
+                if (G[v][k].second == u)
+                {
+                    for (int i = k; i + 1 < G[v].size(); ++i)
+                        G[v][i] = G[v][i + 1];
+                    G[v].pop_back();
+                    return 0;
+                }
+            }
+            return 1;
         }
-    if (j == G[FirstVertexNum].size())
-        throw "This edge not exists!";
-    G[FirstVertexNum].pop_back();
+    }
+    return 1;
 }
 
-AdjMatrix AdjList::toAdjMatrix()
+void AdjList::clear()
 {
-    AdjMatrix g;
+    for (int i = 0; i < G.size(); ++i)
+        G[i].clear();
+    G.clear();
+    maxVertexNum = -1;
+}
+
+void AdjList::toAdjMatrix(AdjMatrix &g)
+{
     g.resize(maxVertexNum + 1);
     g.maxVertexNum = maxVertexNum;
     g.infinity = infinity;
-    Edge newEdge;
-    for (int i = 0; i <= maxVertexNum; i++)
+    for (int i = 0; i <= maxVertexNum; ++i)
     {
-        for (int j = 0; j <= maxVertexNum; j++)
-            if (i == j)
-            {
-                newEdge.u = i;
-                newEdge.v = j; 
-                newEdge.weight = 0;
-                g.addEdge(newEdge);
-            }
-            else
-            {
-                newEdge.u = i;
-                newEdge.v = j; 
-                newEdge.weight = infinity;
-                g.addEdge(newEdge);
-            }
+        for (int j = i + 1; j <= maxVertexNum; ++j)
+        {
+            g.addEdge(Edge(i, j, infinity));
+            g.addEdge(Edge(j, i, infinity));
+        }
     }
     for (unsigned i = 0; i < G.size(); ++i)
         for (int j = 0; j < G[i].size(); ++j)
-        {
-            newEdge.u = i; 
-            newEdge.v = G[i][j].second; 
-            newEdge.weight = G[i][j].first; 
-            g.addEdge(newEdge);
-        }
-    return g;
+            g.addEdge(Edge(i, G[i][j].second, G[i][j].first));
+}
+
+void AdjList::toEdgeList(EdgeList &g)
+{
+    g.maxVertexNum = maxVertexNum;
+    g.infinity = infinity;
+    for (unsigned i = 0; i < G.size(); ++i)
+        for (int j = 0; j < G[i].size(); ++j)
+            if (i < G[i][j].second)
+                g.addEdge(Edge(i, G[i][j].second, G[i][j].first));
+}
+
+std::vector< std::pair<int, unsigned> >& AdjList::operator [](int i)
+{
+    return G[i];
 }
 
 std::istream& operator>> (std::istream& in, AdjList &list)
@@ -152,18 +146,14 @@ std::istream& operator>> (std::istream& in, AdjList &list)
     for (int i = 0; i < m; ++i)
     {
         in >> edge;
-        list.addEdge(edge);
-        /* in case of graph is undirected
-        std::swap(edge.u, edge.v);
-        list.addEdge(edge);
-         */
+        list.addEdge(edge, false);
     }
     return in;
 }
 
 std::ostream& operator<< (std::ostream& out, AdjList &list)
 {
-    for (unsigned i = 0; i < list.maxVertexNum; ++i)
+    for (unsigned i = 0; i <= list.maxVertexNum; ++i)
     {
         for (int j = 0; j < list.G[i].size(); ++j)
         {
