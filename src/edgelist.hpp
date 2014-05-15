@@ -1,6 +1,6 @@
 /* 
  * File:   edgelist.hpp
- * Author: svyat, alex
+ * Author: svyat
  *
  * Created on March 31, 2014, 1:07 AM
  */
@@ -9,13 +9,30 @@
 #define	EDGELIST_HPP
 
 #include <vector>
+#include <limits.h>
 #include <algorithm>
 #include "edge.hpp"
 #include "data_structures.hpp"
 
-EdgeList::EdgeList(std::vector<Edge> edgeList) : edgeList(edgeList)
+EdgeList::EdgeList()
 {
     maxVertexNum = -1;
+    infinity = INT_MAX;
+    directed = false;
+}
+
+EdgeList::EdgeList(bool directed)
+{
+    maxVertexNum = -1;
+    infinity = INT_MAX;
+    this->directed = directed;
+}
+
+EdgeList::EdgeList(std::vector<Edge> edgeList, int inf, bool directed) : edgeList(edgeList)
+{
+    maxVertexNum = -1;
+    infinity = inf;
+    this->directed = directed;
     for (int i = 0; i < edgeList.size(); ++i)
         if (maxVertexNum < std::max(edgeList[i].u, edgeList[i].v))
             maxVertexNum = std::max(edgeList[i].u, edgeList[i].v);
@@ -26,10 +43,14 @@ EdgeList::~EdgeList()
     clear();
 }
 
-int EdgeList::addEdge(Edge edge)
+int EdgeList::addEdge(Edge edge, bool checkExistance)
 {
-    edgeList.push_back(edge);
-    std::swap(edge.u, edge.v);
+    if (!directed && edge.u > edge.v)
+        std::swap(edge.u, edge.v);
+    if (checkExistance)
+        for (int i = 0; i < edgeList.size(); ++i)
+            if (edgeList[i].u == edge.u && edgeList[i].v == edge.v)
+                return 1;
     edgeList.push_back(edge);
     if (std::max(edge.u, edge.v) > maxVertexNum)
         maxVertexNum = std::max(edge.u, edge.v);
@@ -41,29 +62,19 @@ int EdgeList::deleteEdge(unsigned u, unsigned v)
     // Need to recalc maxvertexnum!!!
     if (u > maxVertexNum || v > maxVertexNum || u == v)
         return 1;
-    int deleted = 0;
-    for (int i = 0; deleted != 2 && i < edgeList.size(); ++i)
+    if (!directed && u > v)
+        std::swap(u, v);
+    for (int i = 0; i < edgeList.size(); ++i)
     {
-        if (std::min(edgeList[i].u, edgeList[i].v) == u &&
-                std::max(edgeList[i].u, edgeList[i].v) == v)
+        if (edgeList[i].u == u && edgeList[i].v == v)
         {
             for (int j = i; j + 1 < edgeList.size(); ++j)
                 edgeList[j] = edgeList[j + 1];
             edgeList.pop_back();
-            ++deleted;
-        }
-        else if (std::min(edgeList[i].u, edgeList[i].v) == v &&
-                std::max(edgeList[i].u, edgeList[i].v) == u)
-        {
-            for (int j = i; j + 1 < edgeList.size(); ++j)
-                edgeList[j] = edgeList[j + 1];
-            edgeList.pop_back();
-            ++deleted;
+            return 0;
         }
     }
-    if (deleted != 2)
-        return 1;
-    return 0;
+    return 1;
 }
 
 void EdgeList::clear()
@@ -77,9 +88,14 @@ void EdgeList::toAdjList(AdjList &g)
     g.resize(maxVertexNum + 1);
     g.infinity = infinity;
     g.maxVertexNum = maxVertexNum;
+    g.directed = directed;
     for (int i = 0; i < edgeList.size(); ++i)
-        if (edgeList[i].u < edgeList[i].v)
+    {
+        if (!directed && edgeList[i].u < edgeList[i].v)
             g.addEdge(edgeList[i], false);
+        else if (directed)
+            g.addEdge(edgeList[i], false);
+    }
 }
 
 void EdgeList::toAdjMatrix(AdjMatrix &g)
@@ -87,6 +103,7 @@ void EdgeList::toAdjMatrix(AdjMatrix &g)
     g.resize(maxVertexNum + 1);
     g.maxVertexNum = maxVertexNum;
     g.infinity = infinity;
+    g.directed = directed;
     for (int i = 0; i <= maxVertexNum; ++i)
         for (int j = i + 1; j <= maxVertexNum; ++j)
             g.addEdge(Edge(i, j, infinity));
