@@ -30,9 +30,11 @@ public:
     EdgeList edgeList;
     Type currentType;
     int infinity;
+    bool directed;
     
     Graph();
-    Graph(unsigned);
+    Graph(bool);
+    Graph(unsigned, bool);
     Graph(AdjList);
     Graph(AdjMatrix);
     Graph(EdgeList);
@@ -58,20 +60,31 @@ Graph::Graph()
 {
     currentType = ADJLIST;
     infinity = INT_MAX;
-    adjList = AdjList(0, infinity);
+    directed = false;
+    adjList = AdjList(0, infinity, directed);
 }
 
-Graph::Graph(unsigned size)
+Graph::Graph(bool directed)
 {
     currentType = ADJLIST;
     infinity = INT_MAX;
-    adjList = AdjList(size, infinity);
+    this->directed = directed;
+    adjList = AdjList(0, infinity, directed);
+}
+
+Graph::Graph(unsigned size, bool directed)
+{
+    currentType = ADJLIST;
+    infinity = INT_MAX;
+    this->directed = directed;
+    adjList = AdjList(size, infinity, directed);
 }
 
 Graph::Graph(AdjList g)
 {
     currentType = ADJLIST;
     infinity = INT_MAX;
+    directed = g.directed;
     adjList = g;
 }
 
@@ -79,12 +92,15 @@ Graph::Graph(AdjMatrix g)
 {
     currentType = ADJMATRIX;
     infinity = INT_MAX;
+    directed = g.directed;
     adjMatrix = g;
 }
 
 Graph::Graph(EdgeList g)
 {
     currentType = EDGELIST;
+    infinity = INT_MAX;
+    directed = g.directed;
     edgeList = g;
 }
 
@@ -110,7 +126,7 @@ int Graph::addEdge(Edge e)
     else if (isAdjMatrix())
         return adjMatrix.addEdge(e);
     else if (isEdgeList())
-        return edgeList.addEdge(e);
+        return edgeList.addEdge(e, false);
     else assert(false);
     return 1;
 }
@@ -140,7 +156,7 @@ void Graph::output()
 {
     if (isAdjList())
         std::cout << adjList;
-    else if (isAdjMatrix());
+    else if (isAdjMatrix()) std::cout << adjMatrix;
     else std::cout << edgeList;
 }
 
