@@ -1,168 +1,67 @@
 /* 
- * File:   edgelist.hpp
- * Author: svyat
+ * File:   all_shortest_paths.hpp
+ * Author: alex
  *
- * Created on March 31, 2014, 1:07 AM
+ * Created on April 5, 2014, 12:20 PM
  */
 
-#ifndef EDGELIST_HPP
-#define	EDGELIST_HPP
+#ifndef ALL_SHORTEST_PATHS_HPP
+#define	ALL_SHORTEST_PATHS_HPP
 
-#include <vector>
-#include <limits.h>
-#include <algorithm>
-#include "edge.hpp"
-#include "data_structures.hpp"
+#include <assert.h>
+#include "graph.hpp"
+#include "shortest_paths.hpp"
 
-EdgeList::EdgeList()
+void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& d)
 {
-    maxVertexNum = -1;
-    infinity = INT_MAX;
-    directed = false;
+    g.toAdjMatrix();
+    d.resize(g.verticesCount());
+    for (int i = 0, n = g.verticesCount(); i < n; ++i)
+        d[i].assign(g.adjMatrix[i].begin(), g.adjMatrix[i].end());
+    //omp_set_num_threads(omp_get_num_threads())
+    //omp_set_num_threads(8);
+    for (int k = 0; k < d.size(); ++k)
+    //#pragma omp parallel for private (t1, t2)
+      for (int i = 0; i < d.size(); ++i)
+        if (d[i][k] != g.infinity)
+          for (int j = 0; j < d.size(); ++j)
+            if (d[k][j] != g.infinity)
+                d[i][j] = std::min(d[i][j], d[i][k] + d[k][j]);
 }
 
-EdgeList::EdgeList(bool directed)
+bool ParallelJohnson(Graph &g, std::vector< std::vector< int > >& distance,
+        std::vector< std::vector<int> >& predecessor)
 {
-    maxVertexNum = -1;
-    infinity = INT_MAX;
-    this->directed = directed;
-}
-
-EdgeList::EdgeList(std::vector<Edge> edgeList, int inf, bool directed) : edgeList(edgeList)
-{
-    maxVertexNum = -1;
-    infinity = inf;
-    this->directed = directed;
-    for (int i = 0; i < edgeList.size(); ++i)
-        if (maxVertexNum < std::max(edgeList[i].u, edgeList[i].v))
-            maxVertexNum = std::max(edgeList[i].u, edgeList[i].v);
-}
-
-EdgeList::~EdgeList()
-{
-    clear();
-}
-
-int EdgeList::addEdge(Edge edge, bool checkExistance)
-{
-    if (!directed && edge.u > edge.v)
-        std::swap(edge.u, edge.v);
-    if (checkExistance)
-        for (int i = 0; i < edgeList.size(); ++i)
-            if (edgeList[i].u == edge.u && edgeList[i].v == edge.v)
-                return 1;
-    edgeList.push_back(edge);
-    if (std::max(edge.u, edge.v) > maxVertexNum)
-        maxVertexNum = std::max(edge.u, edge.v);
-    return 0;
-}
-
-int EdgeList::deleteEdge(unsigned u, unsigned v)
-{
-    // Need to recalc maxvertexnum!!!
-    if (u > maxVertexNum || v > maxVertexNum || u == v)
-        return 1;
-    if (!directed && u > v)
-        std::swap(u, v);
-    for (int i = 0; i < edgeList.size(); ++i)
+    g.toEdgeList();
+    ++g.edgeList.maxVertexNum;
+    for (unsigned i = 0, n = (unsigned)g.verticesCount() - 1; i < n; ++i)
+        g.addEdge(Edge(n, i, 0));
+    std::vector<int> h;
+    if (BellmanFord(g, h, g.verticesCount() - 1))
+        return false;
+    for (int i = 0; i < g.edgeList.size(); ++i)
+        g.edgeList[i].weight += h[g.edgeList[i].u] - h[g.edgeList[i].v];
+    distance.resize(g.verticesCount() - 1);
+    predecessor.resize(g.verticesCount() - 1);
+    g.toAdjList();
+    for (unsigned i = 0, n = (unsigned)g.verticesCount() - 1; i < n; ++i)
+        g.deleteEdge(n, i);
+    g.output();
+    g.resize(g.verticesCount() - 1);
+    
+    //omp_set_num_threads(omp_get_num_threads())
+    //#pragma omp parallel for
+    for (unsigned i = 0, n = (unsigned)g.verticesCount(); i < n; ++i)
     {
-        if (edgeList[i].u == u && edgeList[i].v == v)
-        {
-            for (int j = i; j + 1 < edgeList.size(); ++j)
-                edgeList[j] = edgeList[j + 1];
-            edgeList.pop_back();
-            return 0;
-        }
+        Dijkstra(g, distance[i], predecessor[i], i);
+        for (int j = 0; j < distance[i].size(); ++j)
+            if (distance[i][j] != g.infinity)
+                distance[i][j] += h[j] - h[i];
     }
-    return 1;
+    for (unsigned i = 0, n = (unsigned)g.verticesCount(); i < n; ++i)
+        for (int j = 0; j < g.adjList[i].size(); ++j)
+            g.adjList[i][j].first += h[g.adjList[i][j].second] - h[i];
+    return true;
 }
 
-void EdgeList::clear()
-{
-    edgeList.clear();
-    maxVertexNum = -1;
-}
-
-void EdgeList::toAdjList(AdjList &g)
-{
-    g.resize(maxVertexNum + 1);
-    g.infinity = infinity;
-    g.maxVertexNum = maxVertexNum;
-    g.directed = directed;
-    for (int i = 0; i < edgeList.size(); ++i)
-    {
-        if (!directed && edgeList[i].u < edgeList[i].v)
-            g.addEdge(edgeList[i], false);
-        else if (directed)
-            g.addEdge(edgeList[i], false);
-    }
-}
-
-void EdgeList::toAdjMatrix(AdjMatrix &g)
-{
-    g.resize(maxVertexNum + 1);
-    g.maxVertexNum = maxVertexNum;
-    g.infinity = infinity;
-    g.directed = directed;
-    for (int i = 0; i <= maxVertexNum; ++i)
-        for (int j = i + 1; j <= maxVertexNum; ++j)
-            g.addEdge(Edge(i, j, infinity));
-    for (int i = 0; i < edgeList.size(); ++i)
-        g.addEdge(edgeList[i]);
-}
-
-int EdgeList::size()
-{
-    return edgeList.size();
-}
-
-void EdgeList::resize(unsigned size)
-{
-    for (int i = (int)edgeList.size() - 1; i > -1; --i)
-    {
-        if (std::max(edgeList[i].u, edgeList[i].v) >= size)
-        {
-            for (int j = i; j + 1 < edgeList.size(); ++j)
-                edgeList[j] = edgeList[j + 1];
-            edgeList.pop_back();
-        }
-    }
-    maxVertexNum = (int)size - 1;
-}
-
-Edge &EdgeList::operator [](int i)
-{
-    return edgeList[i];
-}
-
-int EdgeList::cost()
-{
-    int cost = 0;
-    for (int i = 0; i < edgeList.size(); ++i)
-        cost += edgeList[i].weight;
-    return cost;
-}
-
-std::istream& operator>> (std::istream& in, EdgeList &list)
-{
-    int n, m;
-    in >> n >> m;
-    list.resize(n + 1);
-    Edge edge;
-    for (int i = 0; i < m; ++i)
-    {
-        in >> edge;
-        list.addEdge(edge, false);
-    }
-    return in;
-}
-
-std::ostream& operator<< (std::ostream& out, EdgeList &list)
-{
-    for (int i = 0; i < list.size(); ++i)
-        out << list[i] << '\n';
-    return out;
-}
-
-#endif	/* EDGELIST_HPP */
-
+#endif	/* ALL_SHORTEST_PATHS_HPP */
