@@ -17,18 +17,29 @@ AdjList::AdjList()
 {
     maxVertexNum = -1;
     infinity = INT_MAX;
+    directed = false;
 }
 
-AdjList::AdjList(unsigned size, int infinity)
+AdjList::AdjList(bool directed)
+{
+    maxVertexNum = -1;
+    infinity = INT_MAX;
+    this->directed = directed;
+}
+
+AdjList::AdjList(unsigned size, int infinity, bool directed)
 {
     this->maxVertexNum = (int)size - 1;
     G.resize(size);
     this->infinity = infinity;
+    this->directed = directed;
 }
 
-AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g)
+AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g, bool directed)
 {
     G = g;
+    this->directed = directed;
+    infinity = INT_MAX;
     maxVertexNum = -1;
     for (unsigned i = 0; i < g.size(); ++i)
         for (int j = 0; j < g[i].size(); ++j)
@@ -64,7 +75,8 @@ int AdjList::addEdge(Edge edge, bool checkExistence)
         resize(maxVertexNum + 1);
     }
     G[edge.u].push_back(std::make_pair(edge.weight, edge.v));
-    G[edge.v].push_back(std::make_pair(edge.weight, edge.u));
+    if (!directed)
+        G[edge.v].push_back(std::make_pair(edge.weight, edge.u));
     return 0;
 }
 
@@ -80,14 +92,17 @@ int AdjList::deleteEdge(unsigned u, unsigned v)
             for (int k = j; k + 1 < G[u].size(); ++k)
                 G[u][k] = G[u][k + 1];
             G[u].pop_back();
-            for (int k = 0; k < G[v].size(); ++k)
+            if (directed)
             {
-                if (G[v][k].second == u)
+                for (int k = 0; k < G[v].size(); ++k)
                 {
-                    for (int i = k; i + 1 < G[v].size(); ++i)
-                        G[v][i] = G[v][i + 1];
-                    G[v].pop_back();
-                    return 0;
+                    if (G[v][k].second == u)
+                    {
+                        for (int i = k; i + 1 < G[v].size(); ++i)
+                            G[v][i] = G[v][i + 1];
+                        G[v].pop_back();
+                        return 0;
+                    }
                 }
             }
             return 1;
@@ -109,12 +124,14 @@ void AdjList::toAdjMatrix(AdjMatrix &g)
     g.resize(maxVertexNum + 1);
     g.maxVertexNum = maxVertexNum;
     g.infinity = infinity;
+    g.directed = directed;
     for (int i = 0; i <= maxVertexNum; ++i)
     {
         for (int j = i + 1; j <= maxVertexNum; ++j)
         {
             g.addEdge(Edge(i, j, infinity));
-            g.addEdge(Edge(j, i, infinity));
+            if (directed)
+                g.addEdge(Edge(j, i, infinity));
         }
     }
     for (unsigned i = 0; i < G.size(); ++i)
@@ -126,10 +143,17 @@ void AdjList::toEdgeList(EdgeList &g)
 {
     g.maxVertexNum = maxVertexNum;
     g.infinity = infinity;
+    g.directed = directed;
     for (unsigned i = 0; i < G.size(); ++i)
+    {
         for (int j = 0; j < G[i].size(); ++j)
-            if (i < G[i][j].second)
-                g.addEdge(Edge(i, G[i][j].second, G[i][j].first));
+        {
+            if (!directed && i < G[i][j].second)
+                g.addEdge(Edge(i, G[i][j].second, G[i][j].first), false);
+            else if (directed)
+                g.addEdge(Edge(i, G[i][j].second, G[i][j].first), false);
+        }
+    }
 }
 
 std::vector< std::pair<int, unsigned> >& AdjList::operator [](int i)
