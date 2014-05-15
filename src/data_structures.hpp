@@ -19,10 +19,12 @@ class AdjList
 public:
     int maxVertexNum;
     int infinity;
+    bool directed;
     
     AdjList();
-    AdjList(unsigned, int);
-    AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g);
+    AdjList(bool);
+    AdjList(unsigned, int, bool);
+    AdjList(std::vector< std::vector<std::pair<int, unsigned> > >, bool);
     ~AdjList();
     
     void resize(unsigned);
@@ -45,19 +47,15 @@ class AdjMatrix
 public:
     int maxVertexNum;
     int infinity;
+    bool directed;
     
     AdjMatrix();
-    AdjMatrix(int inf) { maxVertexNum = -1; infinity = inf; }
-    AdjMatrix(std::vector< std::vector< int > > g, int inf);
-    AdjMatrix(unsigned, int);
+    AdjMatrix(bool);
+    AdjMatrix(std::vector< std::vector< int > >, int, bool);
+    AdjMatrix(unsigned, int, bool);
     ~AdjMatrix();
-    void resize(unsigned size)
-    {
-        G.resize(size);
-        for (int i = 0; i < size; ++i)
-            G[i].resize(size);
-        maxVertexNum = (int)size - 1; 
-    }
+    
+    void resize(unsigned size);
     int addEdge(Edge edge);
     int deleteEdge(unsigned, unsigned);
     void clear();
@@ -69,9 +67,6 @@ public:
     
     friend std::istream& operator>> (std::istream& in, AdjMatrix& matr);
     friend std::ostream& operator<< (std::ostream& out, AdjMatrix& matr);
-
-    // Parallel Floyd Algorithm
-    void ParallelFloyd(std::vector< std::vector< int > >& PathMatrix);
 };
 
 class EdgeList
@@ -80,11 +75,15 @@ class EdgeList
 public:
     int maxVertexNum;
     int infinity;
-    EdgeList() {}
-    EdgeList(std::vector<Edge> edgeList);
+    bool directed;
+    
+    EdgeList();
+    EdgeList(bool);
+    EdgeList(std::vector<Edge>, int, bool);
     ~EdgeList();
+    
     void resize(unsigned);
-    int addEdge(Edge);
+    int addEdge(Edge, bool);
     int deleteEdge(unsigned, unsigned);
     void clear();
     
@@ -100,7 +99,6 @@ public:
     friend std::ostream& operator<< (std::ostream& out, EdgeList &list);
     
     //void sort() { std::sort(edgeList.begin(), edgeList.end()); }
-    // Integer overflow possible
     int cost();
 };
 
