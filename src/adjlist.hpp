@@ -58,6 +58,14 @@ void AdjList::resize(unsigned size)
     maxVertexNum = size - 1;
 }
 
+void AdjList::addVertex()
+{
+    maxVertexNum++;
+    std::vector<std::pair<int, unsigned> > forNew;
+    forNew.clear();
+    G.push_back(forNew);
+}
+
 int AdjList::addEdge(Edge edge, bool checkExistence)
 {
     if (checkExistence)
