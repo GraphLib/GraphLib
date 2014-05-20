@@ -81,6 +81,16 @@ int AdjMatrix::deleteEdge(unsigned u, unsigned v)
     }
 }
 
+void AdjMatrix::addVertex()
+{
+    std::vector<int> forNew;
+    forNew.resize(maxVertexNum + 1);
+    for (int j = 0; j < maxVertexNum; ++j)
+        forNew[j] = infinity;
+    forNew[maxVertexNum] = 0;
+    G.push_back(forNew);
+}
+
 void AdjMatrix::clear()
 {
     for (int i = 0; i < G.size(); ++i)
