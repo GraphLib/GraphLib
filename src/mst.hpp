@@ -8,23 +8,65 @@
 #ifndef MST_HPP
 #define	MST_HPP
 
-#include "edgelist.hpp"
+#include <algorithm>
+#include "graph.hpp"
 #include "dsu.hpp"
+#include <omp.h>
 
-int kruskal(EdgeList g, EdgeList& mst)
+void merge(EdgeList &eList, int l, int m, int r)
 {
-    int cost = 0;
-    DSU dsu(g.maxVertexNum);
-    g.sort();
-    for (EdgeList::iterator it = g.begin(); it != g.end(); ++it)
+    std::vector<Edge> tmp;
+    int pos1 = l;
+    int pos2 = m;
+    while (pos1 < m && pos2 < r)
     {
-        if (dsu.unite(it->u, it->v))
-        {
-            mst.addEdge(*it);
-            cost += it->weight;
-        }
+        if (eList[pos1] < eList[pos2])
+            tmp.push_back(eList[pos1++]);
+        else tmp.push_back(eList[pos2++]);
     }
-    return cost;
+    while (pos1 < m)
+        tmp.push_back(eList[pos1++]);
+    while (pos2 < r)
+        tmp.push_back(eList[pos2++]);
+    for (int i = 0; i < r - l; ++i)
+        eList[l + i] = tmp[i];
+    tmp.clear();
+}
+
+void ParallelSort(EdgeList &eList)
+{
+    int threads = omp_get_max_threads();
+    omp_set_num_threads(threads);
+    std::vector<int> index(threads + 1);
+    int size = eList.size() / threads;
+    for (int i = 0; i < threads; ++i)
+        index[i] = i * size;
+    index[threads] = eList.size();
+#pragma omp parallel for private(i)
+    for (int i = 0; i < threads; ++i)
+        std::sort(eList.begin() + index[i], eList.begin() + index[i + 1]);
+    while (index.size() != 2)
+    {
+#pragma omp parallel for private(i)
+        for (int i = 0; i < (int)index.size() - 2; i += 2)
+            merge(eList, index[i], index[i + 1], index[i + 2]);
+        for (int i = (int)index.size() - 1; i >= 0; --i)
+            if (i & 1)
+                index.erase(index.begin() + i);
+    }
+}
+
+int ParallelKruskal(Graph g, std::vector<Edge>& mst)
+{
+    if (g.directed)
+        return 1;
+    g.toEdgeList();
+    DSU dsu(g.verticesCount());
+    ParallelSort(g.edgeList);
+    for (int i = 0; i < g.edgeList.size(); ++i)
+        if (dsu.unite(g.edgeList[i].u, g.edgeList[i].v))
+            mst.push_back(g.edgeList[i]);
+    return 0;
 }
 
 #endif	/* MST_HPP */
