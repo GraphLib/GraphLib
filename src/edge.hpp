@@ -8,13 +8,26 @@
 #ifndef EDGE_HPP
 #define	EDGE_HPP
 
+/**
+ * Edge - class for edge of graph
+ */
 class Edge
 {
 public:
+    // first vertex
     unsigned u;
+    // second vertex
     unsigned v;
+    // weight
     int weight;
+    
     Edge() {}
+    /**
+     * Constructor
+     * @param u - first vertex
+     * @param v - second vertex
+     * @param weight - weight
+     */
     Edge(unsigned u, unsigned v, int weight) : u(u), v(v), weight(weight) {}
     bool operator<(Edge other) const
     {
