@@ -62,7 +62,7 @@ public:
     ~AdjMatrix();
     
     void resize(unsigned size);
-    void addVeretex();
+    void addVertex();
     int addEdge(Edge edge);
     int deleteEdge(unsigned, unsigned);
     void clear();
@@ -92,7 +92,7 @@ public:
     ~EdgeList();
     
     void resize(unsigned);
-    void addVeretex();
+    void addVertex();
     int addEdge(Edge, bool);
     int deleteEdge(unsigned, unsigned);
     void clear();
