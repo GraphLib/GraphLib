@@ -13,6 +13,9 @@
 #include "edge.hpp"
 #include "data_structures.hpp"
 
+/**
+ * Constructor
+ */
 AdjList::AdjList()
 {
     maxVertexNum = -1;
@@ -34,8 +37,8 @@ AdjList::AdjList(bool directed)
 /**
  * Constructor
  * @param size - number of vertices
- * @param infinity - designation of infinity (if edge doesn't exists)
- * @param directed - true, if edges are directed
+ * @param infinity - designation of infinity (if edge doesn't exist)
+ * @param directed - true, if edges are directed, and false - otherwise
  */
 AdjList::AdjList(unsigned size, int infinity, bool directed)
 {
@@ -48,9 +51,10 @@ AdjList::AdjList(unsigned size, int infinity, bool directed)
 /**
  * Constructor
  * @param g - adjacency list
- * @param directed - true, if edges are directed
+ * @param directed - true, if edges are directed, and false - otherwise
  */
-AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g, bool directed)
+AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g,
+        bool directed)
 {
     G = g;
     this->directed = directed;
@@ -62,13 +66,16 @@ AdjList::AdjList(std::vector< std::vector<std::pair<int, unsigned> > > g, bool d
                 maxVertexNum = std::max(g[i][j].second, i);               
 }
 
+/**
+ * Destructor
+ */
 AdjList::~AdjList()
 {
     clear();
 }
 
 /**
- * resize() - change number of vertices
+ * resize() - changes number of vertices
  * @param size - new number of vertices
  */
 void AdjList::resize(unsigned size)
@@ -78,7 +85,7 @@ void AdjList::resize(unsigned size)
 }
 
 /**
- * addVertex() - add vertex
+ * addVertex() - adds vertex
  */
 void AdjList::addVertex()
 {
@@ -89,9 +96,11 @@ void AdjList::addVertex()
 }
 
 /**
- * addEdge() - add edge
+ * addEdge() - adds edge
  * @param edge - new edge
- * @param checkExistence - true for checkig existence of edge
+ * @param checkExistence - true, if it needs to check existence of edge,
+ * false - otherwise
+ * @return 0, if edge was added, and 1, otherwise
  */
 int AdjList::addEdge(Edge edge, bool checkExistence)
 {
@@ -116,13 +125,13 @@ int AdjList::addEdge(Edge edge, bool checkExistence)
 }
 
 /**
- * deleteEdge() - delete edge
- * @param u - first vertex
- * @param v - second vertex
+ * deleteEdge() - removes the edge
+ * @param u - first vertex of edge
+ * @param v - second vertex of edge
+ * @return 0, if edge was deleted, and 1, otherwise
  */
 int AdjList::deleteEdge(unsigned u, unsigned v)
 {
-    // Need to recalc maxvertexnum!!!
     if (u > maxVertexNum || v > maxVertexNum || u == v)
         return 1;
     for (int j = 0; j < G[u].size(); ++j)
@@ -132,7 +141,7 @@ int AdjList::deleteEdge(unsigned u, unsigned v)
             for (int k = j; k + 1 < G[u].size(); ++k)
                 G[u][k] = G[u][k + 1];
             G[u].pop_back();
-            if (directed)
+            if (!directed)
             {
                 for (int k = 0; k < G[v].size(); ++k)
                 {
@@ -144,15 +153,16 @@ int AdjList::deleteEdge(unsigned u, unsigned v)
                         return 0;
                     }
                 }
+                return 1;
             }
-            return 1;
+            return 0;
         }
     }
     return 1;
 }
 
 /**
- * clear() - clear graph
+ * clear() - clears graph
  */
 void AdjList::clear()
 {
@@ -163,7 +173,7 @@ void AdjList::clear()
 }
 
 /**
- * toAdjMatrix() - convert graph (adjacency list) to adjacency matrix
+ * toAdjMatrix() - converts graph (adjacency list) to adjacency matrix
  * @param g - adjacency matrix for this graph 
  */
 void AdjList::toAdjMatrix(AdjMatrix &g)
@@ -187,7 +197,7 @@ void AdjList::toAdjMatrix(AdjMatrix &g)
 }
 
 /**
- * toEdgeList() - convert graph (adjacency list) to edge list
+ * toEdgeList() - converts graph (adjacency list) to edge list
  * @param g - edge list for this graph 
  */
 void AdjList::toEdgeList(EdgeList &g)
@@ -232,7 +242,8 @@ std::ostream& operator<< (std::ostream& out, AdjList &list)
     {
         for (int j = 0; j < list.G[i].size(); ++j)
         {
-            out << i << ' ' << list.G[i][j].second << ' ' << list.G[i][j].first << '\n'; 
+            out << i << ' ' << list.G[i][j].second << ' ' << 
+                    list.G[i][j].first << '\n'; 
         }
     }
     return out;
