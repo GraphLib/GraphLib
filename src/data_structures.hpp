@@ -12,6 +12,9 @@ class AdjList;
 class AdjMatrix;
 class EdgeList;
 
+/**
+ * AdjList - class for adjacency list
+ */
 class AdjList
 {
     // Graph (Adjacency List)
@@ -54,6 +57,9 @@ public:
     friend std::ostream& operator<< (std::ostream& out, AdjList &list);
 };
 
+/**
+ * AdjList - class for adjacency matrix
+ */
 class AdjMatrix
 {
      // Graph (Adjacency Matrix)
@@ -94,6 +100,9 @@ public:
     friend std::ostream& operator<< (std::ostream& out, AdjMatrix& matr);
 };
 
+/**
+ * AdjList - class for edge list
+ */
 class EdgeList
 {
     // Graph (Edge List)
