@@ -21,6 +21,10 @@ AdjMatrix::AdjMatrix()
     directed = false;
 }
 
+/**
+ * Constructor
+ * @param directed - true, if edges are directed
+ */
 AdjMatrix::AdjMatrix(bool directed)
 {
     maxVertexNum = -1;
@@ -36,6 +40,12 @@ AdjMatrix::AdjMatrix(std::vector< std::vector< int > > g, int inf,
     this->directed = directed;
 }
 
+/**
+ * Constructor
+ * @param size - number of vertices
+ * @param inf - designation of infinity (if edge doesn't exists)
+ * @param directed - true, if edges are directed
+ */
 AdjMatrix::AdjMatrix(unsigned size, int inf, bool directed)
 {
     this->resize(size);
@@ -53,6 +63,10 @@ AdjMatrix::~AdjMatrix()
     clear();
 }
 
+/**
+ * resize() - change number of vertices
+ * @param size - new number of vertices
+ */
 void AdjMatrix::resize(unsigned size)
 {
     G.resize(size);
@@ -61,6 +75,11 @@ void AdjMatrix::resize(unsigned size)
     maxVertexNum = (int)size - 1; 
 }
 
+/**
+ * addEdge() - add edge
+ * @param edge - new edge
+ * @param checkExistence - true for checkig existence of edge
+ */
 int AdjMatrix::addEdge(Edge edge, bool checkExistence)
 {
     if (checkExistence)
@@ -74,6 +93,11 @@ int AdjMatrix::addEdge(Edge edge, bool checkExistence)
     return 0;
 }
 
+/**
+ * deleteEdge() - delete edge
+ * @param u - first vertex
+ * @param v - second vertex
+ */
 int AdjMatrix::deleteEdge(unsigned u, unsigned v)
 {
     if (u > maxVertexNum || v > maxVertexNum || u == v)
@@ -86,6 +110,9 @@ int AdjMatrix::deleteEdge(unsigned u, unsigned v)
     }
 }
 
+/**
+ * addVertex() - add vertex
+ */
 void AdjMatrix::addVertex()
 {
     std::vector<int> forNew;
@@ -96,6 +123,9 @@ void AdjMatrix::addVertex()
     G.push_back(forNew);
 }
 
+/**
+ * clear() - clear graph
+ */
 void AdjMatrix::clear()
 {
     for (int i = 0; i < G.size(); ++i)
@@ -104,6 +134,10 @@ void AdjMatrix::clear()
     maxVertexNum = -1;
 }
 
+/**
+ * toAdjList() - convert graph (adjacency matrix) to adjacency list
+ * @param g - adjacency list for this graph 
+ */
 void AdjMatrix::toAdjList(AdjList &g)
 {
     g.resize(maxVertexNum + 1);
@@ -116,6 +150,10 @@ void AdjMatrix::toAdjList(AdjList &g)
                 g.addEdge(Edge(i, j, G[i][j]), false);
 }
 
+/**
+ * toEdgeList() - convert graph (adjacency matrix) to edge list
+ * @param g - edge list for this graph 
+ */
 void AdjMatrix::toEdgeList(EdgeList &g)
 {
     g.maxVertexNum = maxVertexNum;
