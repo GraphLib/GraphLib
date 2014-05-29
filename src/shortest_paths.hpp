@@ -23,7 +23,7 @@ bool nonnegativeEdges(Graph &g)
 }
 
 /**
- * BellmanFord - find shortest paths from 1 vertex to all in graph (using BellmanFord's algorithm)
+ * BellmanFord() - find shortest paths from 1 vertex to all in graph (using BellmanFord's algorithm)
  * @param g - graph
  * @param distance - array for shortest distances
  * @param start - start vertex
@@ -56,7 +56,7 @@ bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
 }
 
 /**
- * BellmanFord - find shortest paths from 1 vertex to all in graph (using Dijkstra's algorithm)
+ * Dijkstra() - find shortest paths from 1 vertex to all in graph (using Dijkstra's algorithm)
  * @param g - graph
  * @param distance - array for shortest distances
  * * @param predecessor - array for shortest paths (predecessors)
