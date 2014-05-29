@@ -12,6 +12,11 @@
 #include <assert.h>
 #include "graph.hpp"
 
+/**
+ * nonnegativeEdges - detects presence of negative edges
+ * @param g - graph
+ * @return true, if there are no negative edges, false - otherwise
+ */
 bool nonnegativeEdges(Graph &g)
 {
     int n = g.verticesCount();
@@ -23,10 +28,11 @@ bool nonnegativeEdges(Graph &g)
 }
 
 /**
- * BellmanFord() - find shortest paths from 1 vertex to all in graph (using BellmanFord's algorithm)
+ * BellmanFord() - find shortest paths from 1 vertex to all in graph
  * @param g - graph
  * @param distance - array for shortest distances
  * @param start - start vertex
+ * @return true, if negative cycle found, and false - otherwise
  */
 bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
 {
@@ -56,11 +62,13 @@ bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
 }
 
 /**
- * Dijkstra() - find shortest paths from 1 vertex to all in graph (using Dijkstra's algorithm)
+ * Dijkstra() - find shortest paths from one vertex to all in graph
  * @param g - graph
  * @param distance - array for shortest distances
- * * @param predecessor - array for shortest paths (predecessors)
+ * @param predecessor - array for shortest paths (predecessors)
  * @param start - start vertex
+ * @return 1, if start vertex is incorrect, 2 - if there's negative edge
+ * and 0 - otherwise
  */
 int Dijkstra(Graph &g, std::vector<int>& distance,
         std::vector<int>& predecessor, unsigned start)
