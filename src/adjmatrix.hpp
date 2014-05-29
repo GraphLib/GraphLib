@@ -23,7 +23,7 @@ AdjMatrix::AdjMatrix()
 
 /**
  * Constructor
- * @param directed - true, if edges are directed
+ * @param directed - true, if edges are directed, false - otherwise
  */
 AdjMatrix::AdjMatrix(bool directed)
 {
@@ -32,6 +32,13 @@ AdjMatrix::AdjMatrix(bool directed)
     this->directed = directed;
 }
 
+
+/**
+ * Constructor
+ * @param g - adjacency matrix
+ * @param infinity - designation of infinity (if edge doesn't exist)
+ * @param directed - true, if edges are directed, and false - otherwise
+ */
 AdjMatrix::AdjMatrix(std::vector< std::vector< int > > g, int inf,
         bool directed) : G(g)
 {
@@ -43,8 +50,8 @@ AdjMatrix::AdjMatrix(std::vector< std::vector< int > > g, int inf,
 /**
  * Constructor
  * @param size - number of vertices
- * @param inf - designation of infinity (if edge doesn't exists)
- * @param directed - true, if edges are directed
+ * @param inf - designation of infinity (if edge doesn't exist)
+ * @param directed - true, if edges are directed, and false - otherwise
  */
 AdjMatrix::AdjMatrix(unsigned size, int inf, bool directed)
 {
@@ -58,13 +65,16 @@ AdjMatrix::AdjMatrix(unsigned size, int inf, bool directed)
             else G[i][j] = inf;
 }
 
+/**
+ * Destructor
+ */
 AdjMatrix::~AdjMatrix()
 {
     clear();
 }
 
 /**
- * resize() - change number of vertices
+ * resize() - changes number of vertices
  * @param size - new number of vertices
  */
 void AdjMatrix::resize(unsigned size)
@@ -76,9 +86,11 @@ void AdjMatrix::resize(unsigned size)
 }
 
 /**
- * addEdge() - add edge
+ * addEdge() - adds edge
  * @param edge - new edge
- * @param checkExistence - true for checkig existence of edge
+ * @param checkExistence - true, if it needs to check existence of edge,
+ * false - otherwise
+ * @return 0, if edge was added, and 1 - otherwise
  */
 int AdjMatrix::addEdge(Edge edge, bool checkExistence)
 {
@@ -94,9 +106,10 @@ int AdjMatrix::addEdge(Edge edge, bool checkExistence)
 }
 
 /**
- * deleteEdge() - delete edge
- * @param u - first vertex
- * @param v - second vertex
+ * deleteEdge() - removes the edge
+ * @param u - first vertex of edge
+ * @param v - second vertex of edge
+ * @return 0, if edge was deleted, and 1 - otherwise
  */
 int AdjMatrix::deleteEdge(unsigned u, unsigned v)
 {
@@ -108,10 +121,11 @@ int AdjMatrix::deleteEdge(unsigned u, unsigned v)
         if (!directed)
             G[v][u] = infinity;
     }
+    return 0;
 }
 
 /**
- * addVertex() - add vertex
+ * addVertex() - adds vertex
  */
 void AdjMatrix::addVertex()
 {
@@ -124,7 +138,7 @@ void AdjMatrix::addVertex()
 }
 
 /**
- * clear() - clear graph
+ * clear() - clears graph
  */
 void AdjMatrix::clear()
 {
@@ -151,8 +165,8 @@ void AdjMatrix::toAdjList(AdjList &g)
 }
 
 /**
- * toEdgeList() - convert graph (adjacency matrix) to edge list
- * @param g - edge list for this graph 
+ * toEdgeList() - converts graph (adjacency matrix) to edge list
+ * @param g - edge list for this graph
  */
 void AdjMatrix::toEdgeList(EdgeList &g)
 {
