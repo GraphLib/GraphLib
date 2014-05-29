@@ -14,8 +14,14 @@
 #include "adjmatrix.hpp"
 #include "edgelist.hpp"
 
+/**
+ * Types of graph representaton
+ */
 enum Type { ADJLIST, ADJMATRIX, EDGELIST };
 
+/**
+ * Graph - class for object graph
+ */
 class Graph
 {
     void AdjListToAdjMatrix();
@@ -25,11 +31,18 @@ class Graph
     void EdgeListToAdjList();
     void EdgeListToAdjMatrix();
 public:
+    // Adjacency list of graph
     AdjList adjList;
+    // Adjacency matrix of graph
     AdjMatrix adjMatrix;
+    // Edge list of graph
     EdgeList edgeList;
+    
+    // Current graph representation type
     Type currentType;
+    // Designation of infinity (edge's weight, if this edge doesn't exist)
     int infinity;
+    // Existence of edge direction
     bool directed;
     
     Graph();
@@ -64,6 +77,10 @@ Graph::Graph()
     adjList = AdjList(0, infinity, directed);
 }
 
+/**
+ * Constructor
+ * @param directed - true, if edges are directed
+ */
 Graph::Graph(bool directed)
 {
     currentType = ADJLIST;
@@ -72,6 +89,11 @@ Graph::Graph(bool directed)
     adjList = AdjList(0, infinity, directed);
 }
 
+/**
+ * Constructor
+ * @param size - number of vertices
+ * @param directed - true, if edges are directed
+ */
 Graph::Graph(unsigned size, bool directed)
 {
     currentType = ADJLIST;
@@ -80,6 +102,10 @@ Graph::Graph(unsigned size, bool directed)
     adjList = AdjList(size, infinity, directed);
 }
 
+/**
+ * Constructor
+ * @param g - adjacency list of graph
+ */
 Graph::Graph(AdjList g)
 {
     currentType = ADJLIST;
@@ -88,7 +114,10 @@ Graph::Graph(AdjList g)
     adjList = g;
 }
 
-Graph::Graph(AdjMatrix g)
+/**
+ * Constructor
+ * @param g - adjacency matrix of graph
+ */raph::Graph(AdjMatrix g)
 {
     currentType = ADJMATRIX;
     infinity = INT_MAX;
@@ -96,6 +125,10 @@ Graph::Graph(AdjMatrix g)
     adjMatrix = g;
 }
 
+/**
+ * Constructor
+ * @param g - edge list of graph
+ */
 Graph::Graph(EdgeList g)
 {
     currentType = EDGELIST;
@@ -108,6 +141,10 @@ Graph::~Graph()
 {
 }
 
+/**
+ * resize() - change number of vertices
+ * @param size - new number of vertices
+ */
 void Graph::resize(unsigned size)
 {
     if (isAdjList())
@@ -119,18 +156,27 @@ void Graph::resize(unsigned size)
     else assert(false);    
 }
 
+/**
+ * addEdge() - add edge
+ * @param e - new edge
+ */
 int Graph::addEdge(Edge e)
 {
     if (isAdjList())
         return adjList.addEdge(e, false);
     else if (isAdjMatrix())
-        return adjMatrix.addEdge(e);
+        return adjMatrix.addEdge(e, false);
     else if (isEdgeList())
         return edgeList.addEdge(e, false);
     else assert(false);
     return 1;
 }
 
+/**
+ * deleteEdge() - delete edge
+ * @param u - first vertex
+ * @param v - second vertex
+ */
 int Graph::deleteEdge(unsigned u, unsigned v)
 {
     if (isAdjList())
@@ -143,6 +189,9 @@ int Graph::deleteEdge(unsigned u, unsigned v)
     return 1;
 }
 
+/**
+ * verticesCount() - returns number of vertices
+ */
 int Graph::verticesCount()
 {
     if (isAdjList())
@@ -152,6 +201,9 @@ int Graph::verticesCount()
     return edgeList.maxVertexNum + 1;
 }
 
+/**
+ * output() - print graph
+ */
 void Graph::output()
 {
     if (isAdjList())
@@ -217,6 +269,9 @@ void Graph::EdgeListToAdjMatrix()
     edgeList.clear();
 }
 
+/**
+ * toAdjList() - convert graph to adjacency list 
+ */
 void Graph::toAdjList()
 {
     if (isAdjMatrix())
@@ -225,6 +280,9 @@ void Graph::toAdjList()
         EdgeListToAdjList();
 }
 
+/**
+ * toAdjMatrix() - convert graph to adjacency matrix
+ */
 void Graph::toAdjMatrix()
 {
     if (isAdjList())
@@ -233,6 +291,9 @@ void Graph::toAdjMatrix()
         EdgeListToAdjMatrix();
 }
 
+/**
+ * toEdgeList() - convert graph to edge list
+ */
 void Graph::toEdgeList()
 {
     if (isAdjList())
