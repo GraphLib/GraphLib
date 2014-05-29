@@ -116,7 +116,7 @@ int AdjList::addEdge(Edge edge, bool checkExistence)
 }
 
 /**
- * addEdge() - delete edge
+ * deleteEdge() - delete edge
  * @param u - first vertex
  * @param v - second vertex
  */
