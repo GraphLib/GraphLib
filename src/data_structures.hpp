@@ -26,7 +26,7 @@ public:
     int maxVertexNum;
     // Designation of infinity
     int infinity;
-    // Existence direction edges
+    // Existence of edge direction
     bool directed;
     
     AdjList();
