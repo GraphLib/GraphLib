@@ -15,12 +15,12 @@
 #include "edgelist.hpp"
 
 /**
- * Types of graph representaton
+ * Types of graph representation
  */
 enum Type { ADJLIST, ADJMATRIX, EDGELIST };
 
 /**
- * Graph - class for object graph
+ * Graph - class for graph object
  */
 class Graph
 {
@@ -40,7 +40,7 @@ public:
     
     // Current graph representation type
     Type currentType;
-    // Designation of infinity (edge's weight, if this edge doesn't exist)
+    // Designation of infinity (weight of edge in case of it doesn't exist)
     int infinity;
     // Existence of edge direction
     bool directed;
@@ -79,6 +79,9 @@ public:
     void toEdgeList();    
 };
 
+/**
+ * Constructor
+ */
 Graph::Graph()
 {
     currentType = ADJLIST;
@@ -89,7 +92,7 @@ Graph::Graph()
 
 /**
  * Constructor
- * @param directed - true, if edges are directed
+ * @param directed - true, if edges are directed, and false - otherwise
  */
 Graph::Graph(bool directed)
 {
@@ -102,7 +105,7 @@ Graph::Graph(bool directed)
 /**
  * Constructor
  * @param size - number of vertices
- * @param directed - true, if edges are directed
+ * @param directed - true, if edges are directed, and false - otherwise
  */
 Graph::Graph(unsigned size, bool directed)
 {
@@ -127,7 +130,8 @@ Graph::Graph(AdjList g)
 /**
  * Constructor
  * @param g - adjacency matrix of graph
- */raph::Graph(AdjMatrix g)
+ */
+Graph::Graph(AdjMatrix g)
 {
     currentType = ADJMATRIX;
     infinity = INT_MAX;
@@ -147,12 +151,15 @@ Graph::Graph(EdgeList g)
     edgeList = g;
 }
 
+/**
+ * Destructor
+ */
 Graph::~Graph()
 {
 }
 
 /**
- * resize() - change number of vertices
+ * resize() - changes number of vertices
  * @param size - new number of vertices
  */
 void Graph::resize(unsigned size)
@@ -167,8 +174,9 @@ void Graph::resize(unsigned size)
 }
 
 /**
- * addEdge() - add edge
+ * addEdge() - adds edge
  * @param e - new edge
+ * @return 0, if edge was added, and 1, otherwise
  */
 int Graph::addEdge(Edge e)
 {
@@ -183,9 +191,10 @@ int Graph::addEdge(Edge e)
 }
 
 /**
- * deleteEdge() - delete edge
- * @param u - first vertex
- * @param v - second vertex
+ * deleteEdge() - deletes edge
+ * @param u - first vertex of graph
+ * @param v - second vertex of graph
+ * @return 0, if edge was deleted, and 1, otherwise
  */
 int Graph::deleteEdge(unsigned u, unsigned v)
 {
@@ -195,7 +204,6 @@ int Graph::deleteEdge(unsigned u, unsigned v)
         return adjMatrix.deleteEdge(u, v);
     else if (isEdgeList())
         return edgeList.deleteEdge(u, v);
-    else assert(false);
     return 1;
 }
 
@@ -212,7 +220,7 @@ int Graph::verticesCount()
 }
 
 /**
- * output() - print graph
+ * output() - prints graph
  */
 void Graph::output()
 {
@@ -280,7 +288,7 @@ void Graph::EdgeListToAdjMatrix()
 }
 
 /**
- * toAdjList() - convert graph to adjacency list 
+ * toAdjList() - converts graph to adjacency list 
  */
 void Graph::toAdjList()
 {
@@ -291,7 +299,7 @@ void Graph::toAdjList()
 }
 
 /**
- * toAdjMatrix() - convert graph to adjacency matrix
+ * toAdjMatrix() - converts graph to adjacency matrix
  */
 void Graph::toAdjMatrix()
 {
@@ -313,4 +321,3 @@ void Graph::toEdgeList()
 }
 
 #endif	/* GRAPH_HPP */
-
