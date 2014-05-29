@@ -13,7 +13,7 @@
 #include "shortest_paths.hpp"
 
 /**
- * ParallelFloyd - find all shortest paths in graph (using Floyd's algorithm)
+ * ParallelFloyd() - find all shortest paths in graph (using Floyd's algorithm)
  * @param g - graph
  * @param distance - matrix for shortest distances beetween vertices
  */
@@ -35,7 +35,7 @@ void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& distance)
 }
 
 /**
- * ParallelJohnson - find all shortest paths in graph (using Johnson's algorithm)
+ * ParallelJohnson() - find all shortest paths in graph (using Johnson's algorithm)
  * @param g - graph
  * @param distance - matrix for shortest distances beetween vertices
  * @param predecessor - matrix for shortest paths (predecessors)
