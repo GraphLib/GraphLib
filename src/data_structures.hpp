@@ -19,8 +19,6 @@ class AdjList
 {
     // Graph (Adjacency List)
     std::vector< std::vector< std::pair<int, unsigned> > > G;
-    // Add Edge (no check existence of vertices)
-    void addEdgeForJohnson(Edge edge);
 public:
     // Last vertex number
     int maxVertexNum;
@@ -83,7 +81,7 @@ public:
     // add vertex
     void addVertex();
     // add edge
-    int addEdge(Edge edge);
+    int addEdge(Edge, bool);
     // delete edge
     int deleteEdge(unsigned, unsigned);
     // clear
@@ -118,13 +116,20 @@ public:
     EdgeList(std::vector<Edge>, int, bool);
     ~EdgeList();
     
+    // change number of vertices
     void resize(unsigned);
+    // add vertex
     void addVertex();
+    // add edge
     int addEdge(Edge, bool);
+    // delete edge
     int deleteEdge(unsigned, unsigned);
+    // clear
     void clear();
     
+    // convert to adjacency list
     void toAdjList(AdjList&);
+    // convert to adjacency matrix
     void toAdjMatrix(AdjMatrix&);
     
     int size();
@@ -135,8 +140,10 @@ public:
     friend std::istream& operator>> (std::istream& in, EdgeList &list);
     friend std::ostream& operator<< (std::ostream& out, EdgeList &list);
     
-    //void sort() { std::sort(edgeList.begin(), edgeList.end()); }
-    int cost();
+    std::vector<Edge>::iterator begin();
+    
+    // sort edges by weight in non-descending order
+    void sort() { std::sort(edgeList.begin(), edgeList.end()); }
 };
 
 #endif	/* DATA_STRUCTURES_HPP */
