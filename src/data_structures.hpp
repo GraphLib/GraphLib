@@ -14,9 +14,12 @@ class EdgeList;
 
 class AdjList
 {
+    // Graph (Adjacency List)
     std::vector< std::vector< std::pair<int, unsigned> > > G;
+    // Add Edge (no check existence of vertices)
     void addEdgeForJohnson(Edge edge);
 public:
+    // Last vertex number
     int maxVertexNum;
     int infinity;
     bool directed;
@@ -28,6 +31,7 @@ public:
     ~AdjList();
     
     void resize(unsigned);
+    void addVertex();
     int addEdge(Edge, bool);
     int deleteEdge(unsigned, unsigned);
     void clear();
@@ -43,8 +47,10 @@ public:
 
 class AdjMatrix
 {
+     // Graph (Adjacency Matrix)
     std::vector< std::vector < int > > G;
 public:
+    // Last vertex number
     int maxVertexNum;
     int infinity;
     bool directed;
@@ -56,6 +62,7 @@ public:
     ~AdjMatrix();
     
     void resize(unsigned size);
+    void addVeretex();
     int addEdge(Edge edge);
     int deleteEdge(unsigned, unsigned);
     void clear();
@@ -71,8 +78,10 @@ public:
 
 class EdgeList
 {
+    // Graph (Edge List)
     std::vector<Edge> edgeList;
 public:
+    // Last vertex number
     int maxVertexNum;
     int infinity;
     bool directed;
@@ -83,6 +92,7 @@ public:
     ~EdgeList();
     
     void resize(unsigned);
+    void addVeretex();
     int addEdge(Edge, bool);
     int deleteEdge(unsigned, unsigned);
     void clear();
