@@ -13,9 +13,9 @@
 #include "shortest_paths.hpp"
 
 /**
- * ParallelFloyd() - find all shortest paths in graph (using Floyd's algorithm)
+ * ParallelFloyd() - finds all shortest paths in graph (using Floyd's algorithm)
  * @param g - graph
- * @param distance - matrix for shortest distances beetween vertices
+ * @param distance - matrix for shortest distances between vertices
  */
 void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& distance)
 {
@@ -31,14 +31,16 @@ void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& distance)
         if (distance[i][k] != g.infinity)
           for (int j = 0; j < distance.size(); ++j)
             if (distance[k][j] != g.infinity)
-                distance[i][j] = std::min(distance[i][j], distance[i][k] + distance[k][j]);
+                distance[i][j] = std::min(distance[i][j],
+                        distance[i][k] + distance[k][j]);
 }
 
 /**
- * ParallelJohnson() - find all shortest paths in graph (using Johnson's algorithm)
+ * ParallelJohnson() - finds all shortest paths in graph (Johnson's algorithm)
  * @param g - graph
- * @param distance - matrix for shortest distances beetween vertices
+ * @param distance - matrix for shortest distances between vertices
  * @param predecessor - matrix for shortest paths (predecessors)
+ * @return false, if negative cycle was detected, and true - otherwise
  */
 bool ParallelJohnson(Graph &g, std::vector< std::vector< int > >& distance,
         std::vector< std::vector<int> >& predecessor)
