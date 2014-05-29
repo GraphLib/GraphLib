@@ -21,7 +21,9 @@ class AdjList
 public:
     // Last vertex number
     int maxVertexNum;
+    // Designation of infinity
     int infinity;
+    // Existence direction edges
     bool directed;
     
     AdjList();
@@ -30,13 +32,20 @@ public:
     AdjList(std::vector< std::vector<std::pair<int, unsigned> > >, bool);
     ~AdjList();
     
+    // change number of vertices
     void resize(unsigned);
+    // add vertex
     void addVertex();
+    // add edge
     int addEdge(Edge, bool);
+    // delete edge
     int deleteEdge(unsigned, unsigned);
+    // clear
     void clear();
     
+    // convert to adjacency matrix
     void toAdjMatrix(AdjMatrix&);
+    // convert to edge list
     void toEdgeList(EdgeList&);
     
     std::vector< std::pair<int, unsigned> >& operator [](int i);
@@ -52,7 +61,9 @@ class AdjMatrix
 public:
     // Last vertex number
     int maxVertexNum;
+    // Designation of infinity
     int infinity;
+    // Existence direction edges
     bool directed;
     
     AdjMatrix();
@@ -61,13 +72,20 @@ public:
     AdjMatrix(unsigned, int, bool);
     ~AdjMatrix();
     
+    // change number of vertices
     void resize(unsigned size);
+    // add vertex
     void addVertex();
+    // add edge
     int addEdge(Edge edge);
+    // delete edge
     int deleteEdge(unsigned, unsigned);
+    // clear
     void clear();
     
+    // convert to adjacency list
     void toAdjList(AdjList&);
+    // convert to edge list
     void toEdgeList(EdgeList&);
     
     std::vector<int>& operator [](int);
