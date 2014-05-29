@@ -14,6 +14,9 @@
 #include "edge.hpp"
 #include "data_structures.hpp"
 
+/**
+ * Constructor
+ */
 EdgeList::EdgeList()
 {
     maxVertexNum = -1;
@@ -21,6 +24,10 @@ EdgeList::EdgeList()
     directed = false;
 }
 
+/**
+ * Constructor
+ * @param directed - true, if edges are directed
+ */
 EdgeList::EdgeList(bool directed)
 {
     maxVertexNum = -1;
@@ -28,7 +35,14 @@ EdgeList::EdgeList(bool directed)
     this->directed = directed;
 }
 
-EdgeList::EdgeList(std::vector<Edge> edgeList, int inf, bool directed) : edgeList(edgeList)
+/**
+ * Constructor
+ * @param edgeList - edge list
+ * @param infinity - designation of infinity (if edge doesn't exist)
+ * @param directed - true, if edges are directed, and false - otherwise
+ */
+EdgeList::EdgeList(std::vector<Edge> edgeList, int inf, bool directed):
+    edgeList(edgeList)
 {
     maxVertexNum = -1;
     infinity = inf;
@@ -38,11 +52,21 @@ EdgeList::EdgeList(std::vector<Edge> edgeList, int inf, bool directed) : edgeLis
             maxVertexNum = std::max(edgeList[i].u, edgeList[i].v);
 }
 
+/**
+ * Destructor
+ */
 EdgeList::~EdgeList()
 {
     clear();
 }
 
+/**
+ * addEdge() - adds edge
+ * @param edge - new edge
+ * @param checkExistence - true, if it needs to check existence of edge,
+ * false - otherwise
+ * @return 0, if edge was added, and 1, otherwise
+ */
 int EdgeList::addEdge(Edge edge, bool checkExistance)
 {
     if (!directed && edge.u > edge.v)
@@ -57,9 +81,14 @@ int EdgeList::addEdge(Edge edge, bool checkExistance)
     return 0;
 }
 
+/**
+ * deleteEdge() - removes the edge
+ * @param u - first vertex of edge
+ * @param v - second vertex of edge
+ * @return 0, if edge was deleted, and 1, otherwise
+ */
 int EdgeList::deleteEdge(unsigned u, unsigned v)
 {
-    // Need to recalc maxvertexnum!!!
     if (u > maxVertexNum || v > maxVertexNum || u == v)
         return 1;
     if (!directed && u > v)
@@ -77,12 +106,19 @@ int EdgeList::deleteEdge(unsigned u, unsigned v)
     return 1;
 }
 
+/**
+ * clear() - clears graph
+ */
 void EdgeList::clear()
 {
     edgeList.clear();
     maxVertexNum = -1;
 }
 
+/**
+ * toAdjList() - converts graph (edge list) to adjacency list
+ * @param g - adjacency list for this graph 
+ */
 void EdgeList::toAdjList(AdjList &g)
 {
     g.resize(maxVertexNum + 1);
@@ -98,6 +134,10 @@ void EdgeList::toAdjList(AdjList &g)
     }
 }
 
+/**
+ * toAdjMatrix() - converts graph (edge list) to adjacency matrix
+ * @param g - adjacency matrix for this graph 
+ */
 void EdgeList::toAdjMatrix(AdjMatrix &g)
 {
     g.resize(maxVertexNum + 1);
@@ -111,11 +151,18 @@ void EdgeList::toAdjMatrix(AdjMatrix &g)
         g.addEdge(edgeList[i]);
 }
 
+/**
+ * @return number of edges in edge list
+ */
 int EdgeList::size()
 {
     return edgeList.size();
 }
 
+/**
+ * resize() - changes number of vertices
+ * @param size - new number of vertices
+ */
 void EdgeList::resize(unsigned size)
 {
     for (int i = (int)edgeList.size() - 1; i > -1; --i)
@@ -130,17 +177,17 @@ void EdgeList::resize(unsigned size)
     maxVertexNum = (int)size - 1;
 }
 
+/**
+ * @return iterator to the first element of edge list
+ */
+std::vector<Edge>::iterator EdgeList::begin()
+{
+    return edgeList.begin();
+}
+
 Edge &EdgeList::operator [](int i)
 {
     return edgeList[i];
-}
-
-int EdgeList::cost()
-{
-    int cost = 0;
-    for (int i = 0; i < edgeList.size(); ++i)
-        cost += edgeList[i].weight;
-    return cost;
 }
 
 std::istream& operator>> (std::istream& in, EdgeList &list)
