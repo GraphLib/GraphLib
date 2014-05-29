@@ -13,6 +13,13 @@
 #include "dsu.hpp"
 #include <omp.h>
 
+/**
+ * merge() - merges two sorted subarrays into the one
+ * @param eList - list of edges
+ * @param l - left bound of the first subarray
+ * @param m - right bound of the first subarray
+ * @param r - right bound of the second subarray
+ */
 void merge(EdgeList &eList, int l, int m, int r)
 {
     std::vector<Edge> tmp;
@@ -33,6 +40,10 @@ void merge(EdgeList &eList, int l, int m, int r)
     tmp.clear();
 }
 
+/**
+ * ParellelSort() - sorts list of edges by weight in non-descending order
+ * @param eList - list of edges
+ */
 void ParallelSort(EdgeList &eList)
 {
     int threads = omp_get_max_threads();
@@ -56,13 +67,19 @@ void ParallelSort(EdgeList &eList)
     }
 }
 
+/**
+ * ParallelKruskal() - finds minimal spanning tree in undirected graph
+ * @param g - graph
+ * @param mst - edge list of minimal spanning tree
+ * @return 1, if graph is directed, and 0 - otherwise
+ */
 int ParallelKruskal(Graph g, std::vector<Edge>& mst)
 {
     if (g.directed)
         return 1;
     g.toEdgeList();
     DSU dsu(g.verticesCount());
-    ParallelSort(g.edgeList);
+    g.edgeList.sort();
     for (int i = 0; i < g.edgeList.size(); ++i)
         if (dsu.unite(g.edgeList[i].u, g.edgeList[i].v))
             mst.push_back(g.edgeList[i]);
@@ -70,4 +87,3 @@ int ParallelKruskal(Graph g, std::vector<Edge>& mst)
 }
 
 #endif	/* MST_HPP */
-
