@@ -61,8 +61,13 @@ void AdjMatrix::resize(unsigned size)
     maxVertexNum = (int)size - 1; 
 }
 
-int AdjMatrix::addEdge(Edge edge)
+int AdjMatrix::addEdge(Edge edge, bool checkExistence)
 {
+    if (checkExistence)
+    {
+        if (G[edge.u][edge.v] != infinity)
+            return 1;
+    }
     G[edge.u][edge.v] = edge.weight;
     if (!directed)
         G[edge.v][edge.u] = edge.weight;
