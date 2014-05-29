@@ -12,23 +12,34 @@
 #include "graph.hpp"
 #include "shortest_paths.hpp"
 
-void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& d)
+/**
+ * ParallelFloyd - find all shortest paths in graph (using Floyd's algorithm)
+ * @param g - graph
+ * @param distance - matrix for shortest distances beetween vertices
+ */
+void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& distance)
 {
     g.toAdjMatrix();
-    d.resize(g.verticesCount());
+    distance.resize(g.verticesCount());
     for (int i = 0, n = g.verticesCount(); i < n; ++i)
-        d[i].assign(g.adjMatrix[i].begin(), g.adjMatrix[i].end());
+        distance[i].assign(g.adjMatrix[i].begin(), g.adjMatrix[i].end());
     //omp_set_num_threads(omp_get_num_threads())
     //omp_set_num_threads(8);
-    for (int k = 0; k < d.size(); ++k)
+    for (int k = 0; k < distance.size(); ++k)
     //#pragma omp parallel for private (t1, t2)
-      for (int i = 0; i < d.size(); ++i)
-        if (d[i][k] != g.infinity)
-          for (int j = 0; j < d.size(); ++j)
-            if (d[k][j] != g.infinity)
-                d[i][j] = std::min(d[i][j], d[i][k] + d[k][j]);
+      for (int i = 0; i < distance.size(); ++i)
+        if (distance[i][k] != g.infinity)
+          for (int j = 0; j < distance.size(); ++j)
+            if (distance[k][j] != g.infinity)
+                distance[i][j] = std::min(distance[i][j], distance[i][k] + distance[k][j]);
 }
 
+/**
+ * ParallelJohnson - find all shortest paths in graph (using Johnson's algorithm)
+ * @param g - graph
+ * @param distance - matrix for shortest distances beetween vertices
+ * @param predecessor - matrix for shortest paths (predecessors)
+ */
 bool ParallelJohnson(Graph &g, std::vector< std::vector< int > >& distance,
         std::vector< std::vector<int> >& predecessor)
 {
