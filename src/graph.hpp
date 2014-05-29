@@ -53,19 +53,29 @@ public:
     Graph(EdgeList);
     ~Graph();
     
+    // change number of vertices
     void resize(unsigned);
+    // add vertex
+    void addVertex();
+    // add edge
     int addEdge(Edge);
+    // delete edge
     int deleteEdge(unsigned, unsigned);
+    // count number of vertices
     int verticesCount();
     
+    // print graph
     void output();
     
     bool isAdjList();
     bool isAdjMatrix();
     bool isEdgeList();
     
+    // convert graph to adjacency list
     void toAdjList();
+    // convert graph to adjacency matrix
     void toAdjMatrix();
+    // convert graph to edge list
     void toEdgeList();    
 };
 
