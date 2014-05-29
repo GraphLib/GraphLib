@@ -24,8 +24,8 @@ public:
     Edge() {}
     /**
      * Constructor
-     * @param u - first vertex
-     * @param v - second vertex
+     * @param u - first vertex of graph
+     * @param v - second vertex of graph
      * @param weight - weight
      */
     Edge(unsigned u, unsigned v, int weight) : u(u), v(v), weight(weight) {}
@@ -50,4 +50,3 @@ std::ostream& operator<< (std::ostream& out, Edge &edge)
 }
 
 #endif	/* EDGE_HPP */
-
