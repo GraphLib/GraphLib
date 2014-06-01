@@ -86,7 +86,7 @@ Graph::Graph()
 {
     currentType = ADJLIST;
     infinity = INT_MAX;
-    directed = false;
+    directed = true;
     adjList = AdjList(0, infinity, directed);
 }
 
