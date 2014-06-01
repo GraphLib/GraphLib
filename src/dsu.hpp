@@ -18,7 +18,7 @@ class DSU
     std::vector<int> p, rank;
 public:
     bool unite(int, int);
-    DSU(int n = 0);
+    DSU(int);
     ~DSU();
 };
 
@@ -73,3 +73,4 @@ bool DSU::unite(int a, int b)
     return true;
 }
 #endif	/* DSU_HPP */
+
