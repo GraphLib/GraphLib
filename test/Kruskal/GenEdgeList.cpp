@@ -15,7 +15,7 @@ const int n = 100; // number of vertices;
 const int m = 1000; // number of edges;
 const int minW = -10; // minimal weight of edge;
 const int maxW = 10; // maximal weight of edge;
-bool directed = !false; // obvious
+bool directed = false; // obvious
 set< pair<int, int> > exist;
 
 int generateWeight() {
