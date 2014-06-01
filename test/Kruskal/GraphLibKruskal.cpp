@@ -8,10 +8,10 @@
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
-#include "../../mst.hpp"
-#include "../../graph.hpp"
-#include "../../all_shortest_paths.hpp"
-#include "../../edge.hpp"
+#include "../../src/mst.hpp"
+#include "../../src/graph.hpp"
+#include "../../src/all_shortest_paths.hpp"
+#include "../../src/edge.hpp"
 using namespace std;
 
 int n, m;
