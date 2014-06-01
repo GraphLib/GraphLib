@@ -191,11 +191,14 @@ std::istream& operator>> (std::istream& in, AdjMatrix& matr)
     matr.resize(n);
     int weight;
     for (i = 0; i < n; ++i)
+    {
+        matr[i].resize(n);
         for (int j = 0; j < n; ++j)
         {
             i == j ? weight = 0 : weight = matr.infinity;
             matr.G[i][j] = weight;
         }
+    }
     unsigned u, v;
     for (i = 0; i < m; ++i)
     {
