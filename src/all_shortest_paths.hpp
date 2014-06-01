@@ -19,14 +19,15 @@
  */
 void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& distance)
 {
+    int t1, t2;
     g.toAdjMatrix();
     distance.resize(g.verticesCount());
     for (int i = 0, n = g.verticesCount(); i < n; ++i)
         distance[i].assign(g.adjMatrix[i].begin(), g.adjMatrix[i].end());
-    //omp_set_num_threads(omp_get_num_threads())
-    //omp_set_num_threads(8);
+    //omp_set_num_threads(omp_get_num_threads());
+    omp_set_num_threads(8);
     for (int k = 0; k < distance.size(); ++k)
-    //#pragma omp parallel for private (t1, t2)
+    #pragma omp parallel for private (t1, t2)
       for (int i = 0; i < distance.size(); ++i)
         if (distance[i][k] != g.infinity)
           for (int j = 0; j < distance.size(); ++j)
@@ -53,15 +54,16 @@ bool ParallelJohnson(Graph &g, std::vector< std::vector< int > >& distance,
         return false;
     for (int i = 0; i < g.edgeList.size(); ++i)
         g.edgeList[i].weight += h[g.edgeList[i].u] - h[g.edgeList[i].v];
-    //omp_set_num_threads(omp_get_num_threads())
-    //#pragma omp parallel for
+    //omp_set_num_threads(omp_get_num_threads());
+    omp_set_num_threads(8);
     distance.resize(g.verticesCount() - 1);
     predecessor.resize(g.verticesCount() - 1);
     g.toAdjList();
     for (unsigned i = 0, n = (unsigned)g.verticesCount() - 1; i < n; ++i)
         g.deleteEdge(i, n);
     g.resize(g.verticesCount() - 1);
-    for (unsigned i = 0, n = (unsigned)g.verticesCount(); i < n; ++i)
+    #pragma omp parallel for
+    for (int i = 0; i < (unsigned)g.verticesCount(); ++i)
         Dijkstra(g, distance[i], predecessor[i], i);
     for (unsigned i = 0, n = (unsigned)g.verticesCount(); i < n; ++i)
         for (int j = 0; j < g.adjList[i].size(); ++j)
