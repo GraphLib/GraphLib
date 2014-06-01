@@ -146,9 +146,9 @@ void EdgeList::toAdjMatrix(AdjMatrix &g)
     g.directed = directed;
     for (int i = 0; i <= maxVertexNum; ++i)
         for (int j = i + 1; j <= maxVertexNum; ++j)
-            g.addEdge(Edge(i, j, infinity));
+            g.addEdge(Edge(i, j, infinity), false);
     for (int i = 0; i < edgeList.size(); ++i)
-        g.addEdge(edgeList[i]);
+        g.addEdge(edgeList[i], false);
 }
 
 /**
