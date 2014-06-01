@@ -186,14 +186,14 @@ void AdjList::toAdjMatrix(AdjMatrix &g)
     {
         for (int j = i + 1; j <= maxVertexNum; ++j)
         {
-            g.addEdge(Edge(i, j, infinity));
+            g.addEdge(Edge(i, j, infinity), false);
             if (directed)
-                g.addEdge(Edge(j, i, infinity));
+                g.addEdge(Edge(j, i, infinity), false);
         }
     }
     for (unsigned i = 0; i < G.size(); ++i)
         for (int j = 0; j < G[i].size(); ++j)
-            g.addEdge(Edge(i, G[i][j].second, G[i][j].first));
+            g.addEdge(Edge(i, G[i][j].second, G[i][j].first), false);
 }
 
 /**
