@@ -20,7 +20,7 @@ AdjList::AdjList()
 {
     maxVertexNum = -1;
     infinity = INT_MAX;
-    directed = false;
+    directed = true;
 }
 
 /**
