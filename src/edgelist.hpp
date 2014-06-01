@@ -194,7 +194,7 @@ std::istream& operator>> (std::istream& in, EdgeList &list)
 {
     int n, m;
     in >> n >> m;
-    list.resize(n + 1);
+    list.resize(n);
     Edge edge;
     for (int i = 0; i < m; ++i)
     {
