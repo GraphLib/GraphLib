@@ -48,28 +48,30 @@ bool ParallelJohnson(Graph &g, std::vector< std::vector< int > >& distance,
 {
     g.resize(g.verticesCount() + 1);
     for (unsigned i = 0, n = (unsigned)g.verticesCount() - 1; i < n; ++i)
-        g.addEdge(Edge(i, n, 0));
+        g.addEdge(Edge(n, i, 0));
     std::vector<int> h;
     if (BellmanFord(g, h, g.verticesCount() - 1))
         return false;
     for (int i = 0; i < g.edgeList.size(); ++i)
         g.edgeList[i].weight += h[g.edgeList[i].u] - h[g.edgeList[i].v];
-    //omp_set_num_threads(omp_get_num_threads());
-    omp_set_num_threads(8);
+    //omp_set_num_threads(omp_get_num_threads())
+    //#pragma omp parallel for
     distance.resize(g.verticesCount() - 1);
     predecessor.resize(g.verticesCount() - 1);
     g.toAdjList();
     for (unsigned i = 0, n = (unsigned)g.verticesCount() - 1; i < n; ++i)
-        g.deleteEdge(i, n);
+        g.deleteEdge(n, i);
     g.resize(g.verticesCount() - 1);
-    #pragma omp parallel for
-    for (int i = 0; i < (unsigned)g.verticesCount(); ++i)
+    for (unsigned i = 0, n = (unsigned)g.verticesCount(); i < n; ++i)
+    {
         Dijkstra(g, distance[i], predecessor[i], i);
+        for (unsigned j = 0; j < n; ++j)
+            if (distance[i][j] != g.infinity)
+                distance[i][j] += h[j] - h[i];
+    }
     for (unsigned i = 0, n = (unsigned)g.verticesCount(); i < n; ++i)
         for (int j = 0; j < g.adjList[i].size(); ++j)
-            g.adjList[i][j].first += h[i] - h[g.adjList[i][j].second];
-    for (int i = 0; i < g.edgeList.size(); ++i)
-        g.edgeList[i].weight += h[g.edgeList[i].v] - h[g.edgeList[i].u];
+            g.adjList[i][j].first -= h[i] - h[g.adjList[i][j].second];
     return true;
 }
 
