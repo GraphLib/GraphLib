@@ -190,6 +190,11 @@ Edge &EdgeList::operator [](int i)
     return edgeList[i];
 }
 
+void EdgeList::sort()
+{
+    std::sort(edgeList.begin(), edgeList.end());
+}
+
 std::istream& operator>> (std::istream& in, EdgeList &list)
 {
     int n, m;
@@ -212,4 +217,3 @@ std::ostream& operator<< (std::ostream& out, EdgeList &list)
 }
 
 #endif	/* EDGELIST_HPP */
-
