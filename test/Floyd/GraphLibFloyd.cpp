@@ -9,9 +9,9 @@
 #include <cstdio>
 #include <vector>
 #include <limits.h>
-#include "../../all_shortest_paths.hpp"
-#include "../../graph.hpp"
-#include "../../edge.hpp"
+#include "../../src/all_shortest_paths.hpp"
+#include "../../src/graph.hpp"
+#include "../../src/edge.hpp"
 using namespace std;
 
 int n, m;
