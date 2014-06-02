@@ -143,7 +143,7 @@ public:
     std::vector<Edge>::iterator begin();
     
     // sort edges by weight in non-descending order
-    void sort() { std::sort(edgeList.begin(), edgeList.end()); }
+    void sort();
 };
 
 #endif	/* DATA_STRUCTURES_HPP */
