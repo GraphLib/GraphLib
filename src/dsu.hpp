@@ -26,7 +26,7 @@ public:
  * Constructor
  * @param n - initial number of sets
  */
-DSU::DSU(int n = 0)
+DSU::DSU(int n)
 {
     p.resize(n + 1);
     rank.resize(n + 1);
@@ -73,4 +73,3 @@ bool DSU::unite(int a, int b)
     return true;
 }
 #endif	/* DSU_HPP */
-
