@@ -58,6 +58,8 @@ bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
                         g.edgeList[j].weight;
         }
     }
+    distance.pop_back();
+    D.clear();
     return false;
 }
 
