@@ -8,6 +8,7 @@
 #ifndef ADJLIST_HPP
 #define	ADJLIST_HPP
 
+#include <iostream>
 #include <vector>
 #include <limits.h>
 #include "edge.hpp"
