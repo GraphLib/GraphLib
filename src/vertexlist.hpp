@@ -29,10 +29,6 @@ public:
             std::reverse(begin(), end());
         }
     }
-    /*VertexList(AdjList)
-    {
-        //
-    }*/
     ~VertexList()
     {
         vertexList.clear();
