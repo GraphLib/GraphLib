@@ -230,6 +230,14 @@ void Graph::output()
     else std::cout << edgeList;
 }
 
+void Graph::intput()
+{
+    if (isAdjList())
+        std::cin >> adjList;
+    else if (isAdjMatrix()) std::cin >> adjMatrix;
+    else std::cin >> edgeList;
+}
+
 bool Graph::isAdjList()
 {
     return currentType == ADJLIST;
