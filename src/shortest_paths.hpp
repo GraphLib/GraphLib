@@ -99,7 +99,7 @@ int Dijkstra(Graph &g, std::vector<int>& distance,
         {
             v = g.adjList[u][i].second;
             w = g.adjList[u][i].first;
-            if (distance[v] > distance[u] + w)
+            if ((distance[v] > distance[u] + w) || distance[v] == g.infinity))
             {
                 Q.erase(std::make_pair(distance[v], v));
                 distance[v] = distance[u] + w;
