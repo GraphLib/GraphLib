@@ -13,6 +13,16 @@
 #include "graph.hpp"
 #include "shortest_paths.hpp"
 
+int min_of_weights(int a, int b, int infinity)
+{
+    if (a == infinity) return b;
+    else
+    {
+        if (b != infinity) return std::min(a, b);
+        else return a;
+    }
+}
+
 /**
  * ParallelFloyd() - finds all shortest paths in graph (using Floyd's algorithm)
  * @param g - graph
@@ -32,8 +42,8 @@ void ParallelFloyd(Graph& g, std::vector< std::vector< int > >& distance)
         if (distance[i][k] != g.infinity)
           for (int j = 0; j < distance.size(); ++j)
             if (distance[k][j] != g.infinity)
-                distance[i][j] = std::min(distance[i][j],
-                        distance[i][k] + distance[k][j]);
+                distance[i][j] = min_of_weights(distance[i][j],
+                        distance[i][k] + distance[k][j], g.infinity);
 }
 
 /**
