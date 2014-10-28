@@ -80,6 +80,11 @@ bool ParallelJohnson(Graph &g, std::vector< std::vector< int > >& distance,
             if (distance[i][j] != g.infinity)
                 distance[i][j] += h[j] - h[i];
     }
+    if (!g.directed)
+		for (int i = 0; i < n; ++i)
+			for (int j = 0; j < n; ++j)
+				if ((distance[i][j] != infinity) && (distance[j][i] == infinity))
+					distance[j][i] = distance[i][j];
     for (unsigned i = 0; i < n; ++i)
         for (int j = 0; j < g.adjList[i].size(); ++j)
             g.adjList[i][j].first -= h[i] - h[g.adjList[i][j].second];
