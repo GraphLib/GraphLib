@@ -60,7 +60,7 @@ bool ParallelJohnson(Graph &g, std::vector< std::vector< int > >& distance,
     for (unsigned i = 0, n = (unsigned)g.verticesCount() - 1; i < n; ++i)
         g.addEdge(Edge(n, i, 0));
     std::vector<int> h;
-    if (BellmanFord(g, h, g.verticesCount() - 1))
+    if (!BellmanFord(g, h, g.verticesCount() - 1))
         return false;
     for (int i = 0; i < g.edgeList.size(); ++i)
         g.edgeList[i].weight += h[g.edgeList[i].u] - h[g.edgeList[i].v];
