@@ -36,6 +36,8 @@ bool nonnegativeEdges(Graph &g)
  */
 bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
 {
+    if (!g.directed)
+        return false;
     distance.clear();
     distance.assign(g.verticesCount(), g.infinity);
     std::vector<int> D(g.verticesCount());
