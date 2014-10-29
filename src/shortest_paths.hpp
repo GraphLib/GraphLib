@@ -51,7 +51,7 @@ bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
             {
                 D[g.edgeList[j].v] = D[g.edgeList[j].u] + g.edgeList[j].weight;
                 if (i == n - 1)
-                    return true;
+                    return false;
             }
             if (distance[g.edgeList[j].u] != g.infinity &&
                     distance[g.edgeList[j].v] > distance[g.edgeList[j].u] +
@@ -62,7 +62,7 @@ bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
     }
     distance.pop_back();
     D.clear();
-    return false;
+    return true;
 }
 
 /**
