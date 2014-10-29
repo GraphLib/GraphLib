@@ -32,7 +32,7 @@ bool nonnegativeEdges(Graph &g)
  * @param g - graph
  * @param distance - array for shortest distances
  * @param start - start vertex
- * @return true, if negative cycle found, and false - otherwise
+ * @return false, if negative cycle found, and true - otherwise
  */
 bool BellmanFord(Graph &g, std::vector<int>& distance, unsigned start)
 {
